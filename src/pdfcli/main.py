@@ -1,4 +1,5 @@
 from typing import List
+from pdfcli import __version__
 import typer
 from typing_extensions import Annotated
 import rich
@@ -6,7 +7,7 @@ from pypdf import PdfReader, PdfWriter
 from PIL import Image
 from pdf2image import convert_from_path
 from pathlib import Path
-from utils import parse_page_ranges, dedupe_ordered, add_remaining_pages, ensure_extension
+from pdfcli.utils import parse_page_ranges, dedupe_ordered, add_remaining_pages, ensure_extension
 
 app = typer.Typer(help=
     """A simple PDF CLI tool.\n
@@ -163,6 +164,15 @@ def trim(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes f
     with open(output, "wb") as f:
         writer.write(f)
     rich.print(f"[green]Trimmed and saved to {output}[/green]")
+
+@app.callback(invoke_without_command=True)
+def main(version: Annotated[bool, typer.Option(
+    "--version", "-v", help="Show version and exit", callback=False, is_eager=True
+    )] = False):
+
+    if version:
+        print(f"pdfcli version {__version__}")
+        raise typer.Exit()
 
 if __name__ == "__main__":
     app()
