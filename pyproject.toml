@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdfcli"
+version = "0.1.0"
+requires-python = ">=3.8"
+dependencies = [
+    "click==8.3.1",
+    "colorama==0.4.6",
+    "markdown-it-py==4.0.0",
+    "mdurl==0.1.2",
+    "pdf2image==1.17.0",
+    "pillow==12.0.0",
+    "Pygments==2.19.2",
+    "pypdf==6.3.0",
+    "rich==14.2.0",
+    "shellingham==1.5.4",
+    "typer==0.20.0",
+    "typing_extensions==4.15.0"
+]
+description = "A simple CLI app for basic PDF modifications."
+authors = [
+  { name = "Falachi"}
+]
+keywords = [
+  "pdf",
+  "cli",
+  "pdf-tools",
+  "merge-pdf",
+  "pdf-trim",
+  "pdf-to-image"
+]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E.*"]
+
+[project.urls]
+Repository = "https://github.com/Falachi/simple-pdf-cli"
+
+[project.scripts]
+pdfcli = "pdfcli.main:app"
