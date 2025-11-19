@@ -18,13 +18,15 @@ def dedupe_ordered(numbers :List[int]) -> List[int]:
 
   return order_list
 
-# Add the remaining missing pages not in the page list. Mutates the list in-place.
-def add_remaining_pages(page_numbers: List[int], total_pages: int) -> None:
+# Add the remaining missing pages not in the page list.
+def add_remaining_pages(page_numbers: List[int], total_pages: int) -> List[int]:
   seen = set(page_numbers)
 
   for page_number in range(total_pages):
     if page_number not in seen:
       page_numbers.append(page_number)
+  
+  return page_numbers
 
 # Parse a page range string like '1-5,7,8,10-12,9' into a list of integers: [1,2,3,4,5,7,8,10,11,12,9]
 def parse_page_ranges(pages: str) -> List[int]:

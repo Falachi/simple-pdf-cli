@@ -117,9 +117,10 @@ def reorder(input: Annotated[str, typer.Argument(help="Input PDF file. Use quote
     writer = PdfWriter()
 
     output = ensure_extension(output)
-    page_order = dedupe_ordered([int(x)-1 for x in order.split(",")])
+    page_order = add_remaining_pages(
+        dedupe_ordered([int(x)-1 for x in order.split(",")]),
+        total_pages)
     total_pages = len(reader.pages)
-    add_remaining_pages(page_order, total_pages)
 
     for page_number in range(total_pages):
         if page_number not in page_order:
