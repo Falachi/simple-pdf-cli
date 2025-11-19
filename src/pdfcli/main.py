@@ -1,5 +1,5 @@
 from typing import List
-from pdfcli import __version__
+from . import __version__
 import typer
 from typing_extensions import Annotated
 import rich
@@ -7,7 +7,7 @@ from pypdf import PdfReader, PdfWriter
 from PIL import Image
 from pdf2image import convert_from_path
 from pathlib import Path
-from pdfcli.utils import parse_page_ranges, dedupe_ordered, add_remaining_pages, ensure_extension
+from .utils import parse_page_ranges, dedupe_ordered, add_remaining_pages, ensure_extension
 
 app = typer.Typer(help=
     """A simple PDF CLI tool.\n
@@ -173,6 +173,3 @@ def main(version: Annotated[bool, typer.Option(
     if version:
         print(f"pdfcli version {__version__}")
         raise typer.Exit()
-
-if __name__ == "__main__":
-    app()
