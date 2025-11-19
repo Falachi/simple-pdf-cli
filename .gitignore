@@ -1,0 +1,6 @@
+venv/
+samples/
+__pycache__/
+
+*.pyo
+*.pyd
