@@ -148,7 +148,7 @@ def trim(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes f
     Support ranges and specific pages such as "1-5" or "1,2,3". It can also reverse pages like "9-5", or "9, 6, 7", and reorder pages. Duplicates are allowed.\n
     Please specify without using spaces.\n
     Example:\n
-        pdfcli output.pdf -i input.pdf -p 1-5,7,10-12,9
+        pdfcli input.pdf -o output.pdf -p 1-5,7,10-12,9
     """
     
     reader =  PdfReader(input)

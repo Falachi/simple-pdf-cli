@@ -37,16 +37,17 @@ pdfcli input.pdf -o output.pdf -r 3,1,2
 **Trim**
 
 ```bash
-pdfcli output.pdf -i input.pdf -p 1-5,7,10-12,9
+pdfcli input.pdf -o output.pdf -p 1-5,7,10-12,9
 ```
 
 ## To-Do List
 
-- [ ] Upload to PyPI
+- [ ] Better type and error checking
 - [ ] Compress PDF
 - [ ] Split PDF
 - [ ] Password protect
 - [ ] Allow a `.txt` file as input for arguments that accept multiple files
 - [ ] Edit PDF metadata
+- [ ] Upload to PyPI
 - [ ] Create a GUI version
 - Etc.
