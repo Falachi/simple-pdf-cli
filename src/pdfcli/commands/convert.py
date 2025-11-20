@@ -1,4 +1,3 @@
-
 # Images to PDF
 from pathlib import Path
 from PIL import Image
