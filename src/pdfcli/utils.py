@@ -29,21 +29,31 @@ def add_remaining_pages(page_numbers: List[int], total_pages: int) -> List[int]:
   return page_numbers
 
 # Parse a page range string like '1-5,7,8,10-12,9' into a list of integers: [1,2,3,4,5,7,8,10,11,12,9]
-def parse_page_ranges(pages: str) -> List[int]:
-    page_lst = []
-    parts = [page.strip() for page in pages.strip(',').split(',')]
+def parse_page_ranges(pages: str, *, dups: bool = False, subtract_one: bool = False) -> List[int]:
+  page_lst = []
+  parts = [page.strip() for page in pages.strip(',').split(',')]
 
-    for part in parts:
-        if "-" in part:
-            start, end = part.split("-")
-            start, end = int(start), int(end)
+  for part in parts:
+    if "-" in part:
+      start, end = part.split("-")
+      start, end = int(start), int(end)
 
-            # If reorder is reversed
-            if start > end: 
-                page_lst.extend(range(start, end - 1, -1))
-            else:
-                page_lst.extend(range(start, end + 1))
-        else:
-            page_lst.append(int(part))
+      if subtract_one:
+        start -= 1
+        end -= 1
 
-    return page_lst
+      # If reorder is reversed
+      if start > end: 
+        page_lst.extend(range(start, end - 1, -1))
+      else:
+        page_lst.extend(range(start, end + 1))
+    else:
+      num = int(part)
+      if subtract_one:
+        num -= 1
+      page_lst.append(num)
+  
+  if not dups:
+    page_lst = dedupe_ordered(page_lst)
+
+  return page_lst
