@@ -7,6 +7,7 @@ import pdfcli.commands.merge as merge
 import pdfcli.commands.convert as convert
 import pdfcli.commands.reorder as reorder
 import pdfcli.commands.trim as trim
+import pdfcli.commands.split as split
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
@@ -74,6 +75,21 @@ def trim_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use 
   )]):
 
   trim.execute(input, output, pages)
+
+# Split PDF
+@app.command(help=split.description, name="split")
+def split_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes for path with spaces.")],
+  parts: Annotated[str, typer.Option(
+    ..., "--part","-p",
+    help="Page or range to split. Please don't add any spaces. e.g '1-5,3-6,7'",
+    prompt= "Parts (e.g 1-5,3-6,7)"
+  )],
+  output_folder: Annotated[str, typer.Option(
+    ..., "-o", "--output", help="Output file location.",
+    prompt="Output folder name"
+    )] = "out_pdfs"):
+  
+  split.execute(input, output_folder, parts)
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(

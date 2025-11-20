@@ -33,6 +33,8 @@ def parse_page_ranges(pages: str, *, dups: bool = False, subtract_one: bool = Fa
   page_lst = []
   parts = [page.strip() for page in pages.strip(',').split(',')]
 
+  # TODO: Create a validation function to check if the input is valid or need cleaning
+
   for part in parts:
     if "-" in part:
       start, end = part.split("-")
