@@ -12,13 +12,13 @@ description = """
 
 def execute(inputs: List[str], output: str) -> None:
 
-    writer = PdfWriter()
-    output = ensure_extension(output)
+  writer = PdfWriter()
+  output = ensure_extension(output)
 
-    for pdf in inputs:
-      reader = PdfReader(pdf)
-      for page in reader.pages:
-        writer.add_page(page)
-    with open(output, "wb") as f:
-      writer.write(f)
-    rich.print(f"[green]Successfully merged into {output}[/green]")
+  for pdf in inputs:
+    reader = PdfReader(pdf)
+    for page in reader.pages:
+      writer.add_page(page)
+  with open(output, "wb") as f:
+    writer.write(f)
+  rich.print(f"[green]Successfully merged into {output}[/green]")
