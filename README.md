@@ -40,11 +40,17 @@ pdfcli input.pdf -o output.pdf -r 3,1,2
 pdfcli input.pdf -o output.pdf -p 1-5,7,10-12,9
 ```
 
+**Split**
+
+```bash
+pdfcli split input.pdf -o out_pdfs -p 1-5,3-6,7
+```
+
 ## To-Do List
 
-- [ ] Better type and error checking
+- [ ] Implement proper type and error checking
 - [ ] Compress PDF
-- [ ] Split PDF
+- [x] Split PDF
 - [ ] Password protect
 - [ ] Allow a `.txt` file as input for arguments that accept multiple files
 - [ ] Edit PDF metadata
