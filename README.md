@@ -7,6 +7,7 @@ Simple PDF-CLI is a simple CLI app to edit PDFs directly from the terminal. Curr
 - Combine images to a PDF
 - Reorder pages of a PDF
 - Trim pages of a PDF
+- Split a PDF into multiple PDFs
 
 ## Usage Examples
 
