@@ -1,6 +1,7 @@
+from contextlib import contextmanager
+from functools import wraps
 from pathlib import Path
 from typing import List
-
 import typer
 
 from pdfcli.utils.validators import exit_with_error_message, path_validator
@@ -60,11 +61,11 @@ def parse_page_ranges(pages: str, *, dups: bool = False, subtract_one: bool = Fa
   return page_lst
 
 # Create path by validating first
-def create_path(path_name: str):
+def create_path(path_name: str,*, default: str = "") -> str:
 
   path_name = path_name.strip()
 
-  if not path_validator(path_name):
+  if not path_validator(path_name, default):
     exit_with_error_message("Path is invalid.")
   
   dir_path = Path(path_name)
@@ -79,3 +80,5 @@ def create_path(path_name: str):
       exit_with_error_message('Permission denied.')
     except Exception as e:
       exit_with_error_message(e)
+  
+  return path_name # In case .strip() helps

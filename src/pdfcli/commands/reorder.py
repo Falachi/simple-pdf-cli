@@ -1,10 +1,9 @@
 import rich
-import typer
 from pypdf import PdfReader, PdfWriter
-from typing_extensions import Annotated
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from pdfcli.utils.page_utils import add_remaining_pages, parse_page_ranges
-from pdfcli.utils.validators import ensure_extension
+from pdfcli.utils.validators import ensure_extension, exit_with_error_message, page_validator
 
 description = """
   Reorder PDF pages.\n
@@ -27,9 +26,19 @@ def execute(input: str, output: str, order: str) -> None:
     parse_page_ranges(order, subtract_one=True),
     total_pages)
 
-  for idx in page_order:
-    writer.add_page(reader.pages[idx])
+  if not page_validator(page_order, total_pages):
+    exit_with_error_message("Page is out of range.")
 
-  with open(output, "wb") as f:
-    writer.write(f)
+  with Progress(
+    SpinnerColumn(),
+    TextColumn("[progress.description]{task.description}"),
+    transient=True
+  ) as progress:
+    progress.add_task(description="Changing orders...", total=None)
+    for idx in page_order:
+      writer.add_page(reader.pages[idx])
+
+    with open(output, "wb") as f:
+      writer.write(f)
+
   rich.print(f"[green]Reordered and saved to {output}[/green]")

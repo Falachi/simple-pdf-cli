@@ -1,6 +1,7 @@
 
 # File validation and correction
 import re
+from typing import List
 import rich
 from pathlib import Path
 
@@ -8,11 +9,11 @@ import typer
 
 INVALID_CHARS = r'\\|/|:|\*|\?|"|<|>|\|'
 
-def ensure_extension(filename: str, extension: str = ".pdf") -> str:
+def ensure_extension(filename: str, *, extension: str = ".pdf") -> str:
 
   filename = filename.strip()
 
-  if is_valid_filename(filename, no_ext=False):
+  if not is_valid_filename(filename, no_ext=False):
     exit_with_error_message("File name invalid.")
   
   if not filename.lower().endswith(extension):
@@ -42,11 +43,14 @@ WINDOWS_RESERVED = {
 
 
 # Folder validation
-def path_validator(path_name: str) -> bool:
+def path_validator(path_name: str, default: str = "") -> bool:
   path_name = path_name.strip()
 
   if not path_name:
-    return False
+    if not default:
+      return False
+    else:
+      path_name = default
 
   parts = path_name.replace("\\", "/").split("/")
 
@@ -61,5 +65,16 @@ def path_validator(path_name: str) -> bool:
     
     if re.search(INVALID_CHARS, part):
       return False
+  
+  return True
+
+# assumes the list is 0-indexed
+def page_validator(pages: List[int], total_pages: int) -> bool:
+
+  if not pages:
+    return False
+
+  if min(pages) < 0 or max(pages) >= total_pages:
+    return False
   
   return True

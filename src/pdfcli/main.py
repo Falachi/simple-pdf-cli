@@ -25,7 +25,7 @@ def merge_command(inputs: Annotated[List[str], typer.Argument(help="Input PDF fi
       ...,"-o", "--output", help="Output PDF file (path + filename).",
       prompt="Output file name"
   )]):
-
+  
   merge.execute(inputs, output)
 
 # Images to PDF

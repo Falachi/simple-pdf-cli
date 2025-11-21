@@ -1,6 +1,7 @@
 from typing import List
 from pypdf import PdfReader, PdfWriter
 import rich
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from pdfcli.utils.validators import ensure_extension
 
@@ -14,11 +15,18 @@ def execute(inputs: List[str], output: str) -> None:
 
   writer = PdfWriter()
   output = ensure_extension(output)
-
-  for pdf in inputs:
-    reader = PdfReader(pdf)
-    for page in reader.pages:
-      writer.add_page(page)
-  with open(output, "wb") as f:
-    writer.write(f)
+  
+  with Progress(
+    SpinnerColumn(),
+    TextColumn("[progress.description]{task.description}"),
+    transient=True
+  ) as progress:
+    progress.add_task(description="Merging...", total=None)
+    for pdf in inputs:
+      reader = PdfReader(pdf)
+      for page in reader.pages:
+        writer.add_page(page)
+    with open(output, "wb") as f:
+      writer.write(f)
+      
   rich.print(f"[green]Successfully merged into {output}[/green]")

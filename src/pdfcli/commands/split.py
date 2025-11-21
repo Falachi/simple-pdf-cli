@@ -1,8 +1,10 @@
 from pathlib import Path
 from pypdf import PdfReader, PdfWriter
 import rich
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import parse_page_ranges
+from pdfcli.utils.page_utils import create_path, parse_page_ranges
+from pdfcli.utils.validators import exit_with_error_message, page_validator
 
 
 description= """
@@ -16,19 +18,26 @@ pdfcli split input.pdf -o out_pdfs -p 1-5,3-6,7\n
 # Split PDF
 def execute(input: str, output_folder: str, parts: str) -> None:
 
-  if not output_folder.strip():
-    output_folder = "out_pdfs"
-  
-  
+  output_folder = create_path(output_folder, default="out_pdfs")
 
   reader = PdfReader(input)
 
   groupings = [parse_page_ranges(part, subtract_one=True, dups=False) for part in parts.split(',')]
 
-  for index, pages in enumerate(groupings, start=1):
-    writer = PdfWriter()
-    for page in pages:
-      writer.add_page(reader.pages[page])
-    writer.write(f"{output_folder}/output-{index}.pdf")
+  for group in groupings:
+    if not page_validator(group, len(reader.pages)):
+      exit_with_error_message("Page is out of range.")
+
+  with Progress(
+    SpinnerColumn(),
+    TextColumn("[progress.description]{task.description}"),
+    transient=True
+  ) as progress:
+    progress.add_task(description="Splitting...", total=None)
+    for index, pages in enumerate(groupings, start=1):
+      writer = PdfWriter()
+      for page in pages:
+        writer.add_page(reader.pages[page])
+      writer.write(f"{output_folder}/output-{index}.pdf")
   
   rich.print(f"[green]Successfully split into {output_folder}/[/green]")
