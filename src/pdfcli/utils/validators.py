@@ -34,9 +34,32 @@ def is_valid_filename(name: str, *, no_empty = True, no_ext = True, no_char = Tr
   
   return True
 
+WINDOWS_RESERVED = {
+  "CON", "PRN", "AUX", "NUL",
+  *(f"COM{i}" for i in range(1, 10)),
+  *(f"LPT{i}" for i in range(1, 10))
+}
+
+
 # Folder validation
 def path_validator(path_name: str) -> bool:
+  path_name = path_name.strip()
 
   if not path_name:
     return False
+
+  parts = path_name.replace("\\", "/").split("/")
+
+  for part in parts:
+    if not part:
+      continue
+    if part.upper() in WINDOWS_RESERVED:
+      return False
+    
+    if part.endswith(".") or part.endswith(" "):  # Windows rule
+      return False
+    
+    if re.search(INVALID_CHARS, part):
+      return False
   
+  return True

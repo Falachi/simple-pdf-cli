@@ -62,13 +62,16 @@ def parse_page_ranges(pages: str, *, dups: bool = False, subtract_one: bool = Fa
 # Create path by validating first
 def create_path(path_name: str):
 
+  path_name = path_name.strip()
+
   if not path_validator(path_name):
     exit_with_error_message("Path is invalid.")
   
   dir_path = Path(path_name)
 
   if dir_path.exists():
-    typer.confirm("Folder already exist. Overwrite?")
+    if not typer.confirm("Folder already exist. Overwrite?"):
+      raise typer.Exit(code=1)
   else:
     try:
       dir_path.mkdir(parents=True, exist_ok=True)
