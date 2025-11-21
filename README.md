@@ -48,7 +48,7 @@ pdfcli split input.pdf -o out_pdfs -p 1-5,3-6,7
 
 ## To-Do List
 
-- [ ] Implement proper type and error checking
+- [x] Implement proper type and error checking
 - [ ] Compress PDF
 - [x] Split PDF
 - [ ] Password protect
