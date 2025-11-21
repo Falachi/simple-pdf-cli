@@ -2,7 +2,7 @@ from typing import List
 from pypdf import PdfReader, PdfWriter
 import rich
 
-from pdfcli.utils import ensure_extension
+from pdfcli.utils.validators import ensure_extension
 
 description = """
   Merge multiple PDF files into one.\n

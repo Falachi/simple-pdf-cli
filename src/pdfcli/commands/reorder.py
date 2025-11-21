@@ -3,7 +3,8 @@ import typer
 from pypdf import PdfReader, PdfWriter
 from typing_extensions import Annotated
 
-from pdfcli.utils import add_remaining_pages, ensure_extension, parse_page_ranges
+from pdfcli.utils.page_utils import add_remaining_pages, parse_page_ranges
+from pdfcli.utils.validators import ensure_extension
 
 description = """
   Reorder PDF pages.\n

@@ -5,7 +5,7 @@ from typing import List
 from pdf2image import convert_from_path
 import rich
 
-from pdfcli.utils import ensure_extension
+from pdfcli.utils.validators import ensure_extension
 
 img2pdf_desc = """
   Convert images to a single PDF.\n

@@ -1,10 +1,9 @@
+from pathlib import Path
 from typing import List
 
-# File validation and correction
-def ensure_extension(filename: str, extension: str = ".pdf") -> str:
-  if not filename.lower().endswith(extension):
-    return filename + extension
-  return filename
+import typer
+
+from pdfcli.utils.validators import exit_with_error_message, path_validator
 
 # Returned a list without duplicates while in the same order based on the input.
 def dedupe_ordered(numbers :List[int]) -> List[int]:
@@ -59,3 +58,21 @@ def parse_page_ranges(pages: str, *, dups: bool = False, subtract_one: bool = Fa
     page_lst = dedupe_ordered(page_lst)
 
   return page_lst
+
+# Create path by validating first
+def create_path(path_name: str):
+
+  if not path_validator(path_name):
+    exit_with_error_message("Path is invalid.")
+  
+  dir_path = Path(path_name)
+
+  if dir_path.exists():
+    typer.confirm("Folder already exist. Overwrite?")
+  else:
+    try:
+      dir_path.mkdir(parents=True, exist_ok=True)
+    except PermissionError:
+      exit_with_error_message('Permission denied.')
+    except Exception as e:
+      exit_with_error_message(e)

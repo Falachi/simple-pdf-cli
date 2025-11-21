@@ -2,7 +2,8 @@
 from pypdf import PdfReader, PdfWriter
 import rich
 
-from pdfcli.utils import ensure_extension, parse_page_ranges
+from pdfcli.utils.page_utils import parse_page_ranges
+from pdfcli.utils.validators import ensure_extension
 
 description = """
   Trim or reorder pages of a PDF using page range syntax.\n

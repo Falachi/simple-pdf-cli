@@ -1,10 +1,10 @@
 import pytest
-from pdfcli.utils import (
+from pdfcli.utils.page_utils import (
   parse_page_ranges,
   dedupe_ordered,
   add_remaining_pages,
-  ensure_extension,
 )
+from pdfcli.utils.validators import ensure_extension
 
 # parse_page_ranges tests
 def test_simple_range():

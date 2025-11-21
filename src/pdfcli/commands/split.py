@@ -2,7 +2,7 @@ from pathlib import Path
 from pypdf import PdfReader, PdfWriter
 import rich
 
-from pdfcli.utils import parse_page_ranges
+from pdfcli.utils.page_utils import parse_page_ranges
 
 
 description= """
@@ -18,7 +18,8 @@ def execute(input: str, output_folder: str, parts: str) -> None:
 
   if not output_folder.strip():
     output_folder = "out_pdfs"
-  Path(output_folder).mkdir(exist_ok=True) # TODO: Proper folder name verification
+  
+  
 
   reader = PdfReader(input)
 
