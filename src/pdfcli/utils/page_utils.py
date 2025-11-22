@@ -2,9 +2,10 @@ from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
 from typing import List
+from pypdf import PdfReader
 import typer
 
-from pdfcli.utils.validators import exit_with_error_message, path_validator
+from pdfcli.utils.validators import ensure_extension, exit_with_error_message, path_validator
 
 # Returned a list without duplicates while in the same order based on the input.
 def dedupe_ordered(numbers :List[int]) -> List[int]:
@@ -82,3 +83,14 @@ def create_path(path_name: str,*, default: str = "") -> str:
       exit_with_error_message(e)
   
   return path_name # In case .strip() helps
+
+
+def read_pdf(filename:str) -> PdfReader:
+  path = ensure_extension(filename)
+  reader = PdfReader(path)
+
+  if reader.is_encrypted:
+    password = typer.prompt(f"{file} is encrypted. Enter password")
+    reader.decrypt(password)
+  
+  return PdfReader

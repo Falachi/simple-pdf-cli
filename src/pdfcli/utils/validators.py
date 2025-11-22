@@ -13,11 +13,14 @@ def ensure_extension(filename: str, *, extension: str = ".pdf") -> str:
 
   filename = filename.strip()
 
-  if not is_valid_filename(filename, no_ext=False):
+  base = Path(filename).name
+
+  if not is_valid_filename(base, no_ext=False):
     exit_with_error_message("File name invalid.")
   
-  if not filename.lower().endswith(extension):
-    return filename + extension
+  if not base.lower().endswith(extension):
+    filename = str(Path(filename).with_name(base + extension))
+  
   return filename
 
 def exit_with_error_message(reason: str) -> None:
