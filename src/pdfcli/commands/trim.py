@@ -1,9 +1,9 @@
 
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfWriter
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import parse_page_ranges
+from pdfcli.utils.page_utils import parse_page_ranges, read_pdf
 from pdfcli.utils.validators import ensure_extension, exit_with_error_message, page_validator
 
 description = """
@@ -17,7 +17,7 @@ description = """
 # Trim PDFs
 def execute(input: str, output: str, pages: str) -> None:
   
-  reader =  PdfReader(input)
+  reader =  read_pdf(input)
   writer = PdfWriter()
 
   page_order = parse_page_ranges(pages, dups=True, subtract_one=True)

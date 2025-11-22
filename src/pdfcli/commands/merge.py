@@ -3,6 +3,7 @@ from pypdf import PdfReader, PdfWriter
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from pdfcli.utils.page_utils import read_pdf
 from pdfcli.utils.validators import ensure_extension
 
 description = """
@@ -23,7 +24,7 @@ def execute(inputs: List[str], output: str) -> None:
   ) as progress:
     progress.add_task(description="Merging...", total=None)
     for pdf in inputs:
-      reader = PdfReader(pdf)
+      reader = read_pdf(pdf)
       for page in reader.pages:
         writer.add_page(page)
     with open(output, "wb") as f:

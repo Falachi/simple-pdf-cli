@@ -1,9 +1,8 @@
-from pathlib import Path
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfWriter
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import create_path, parse_page_ranges
+from pdfcli.utils.page_utils import create_path, parse_page_ranges, read_pdf
 from pdfcli.utils.validators import exit_with_error_message, page_validator
 
 
@@ -20,7 +19,7 @@ def execute(input: str, output_folder: str, parts: str) -> None:
 
   output_folder = create_path(output_folder, default="out_pdfs")
 
-  reader = PdfReader(input)
+  reader = read_pdf(input)
 
   groupings = [parse_page_ranges(part, subtract_one=True, dups=False) for part in parts.split(',')]
 
