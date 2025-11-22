@@ -101,7 +101,7 @@ def encrypt_command(input: Annotated[str, typer.Argument(help="Input PDF file. U
     prompt="Output file name"
     )],
   password: Annotated[str, typer.Option(
-    ..., help="The password use to encrypt the file. No restrictions.",
+    ..., "-p", "--password", help="The password use to encrypt the file. No restriction.",
     prompt=True,
     confirmation_prompt=True,
     hide_input=True

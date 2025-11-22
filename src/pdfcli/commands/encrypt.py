@@ -9,7 +9,7 @@ from pdfcli.utils.validators import exit_with_error_message
 
 description = """
 Encrypt the PDF with a password.\n
-Supports RC4-40, RC4-128, AES-128, AES-256-R5, and AES-256. Default to AES-256-R5.
+For privacy, omit writing the password with the flag. Supports RC4-40, RC4-128, AES-128, AES-256-R5, and AES-256. Default to AES-256-R5.\n
 Example:\n
 pdfcli encrpyt file.pdf -a AES-256-R5
 """
@@ -23,7 +23,6 @@ def execute(input: str, output: str, password: str,
 
   reader = read_pdf(input)
   
-
   with Progress(
     SpinnerColumn(),
     TextColumn("[progress.description]{task.description}"),

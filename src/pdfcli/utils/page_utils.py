@@ -99,8 +99,9 @@ def read_pdf(filename:str) -> PdfReader:
     exit_with_error_message(str(e))
 
   tries = 3
+  indicator = -1 # default value for no password
   while reader.is_encrypted and tries > 0:
-    password = typer.prompt(f"{base} is encrypted. Enter password")
+    password = typer.prompt(f"{base} is encrypted. Enter password", hide_input=True)
     indicator = reader.decrypt(password)
     if indicator == 0: # wrong password
       tries -= 1
