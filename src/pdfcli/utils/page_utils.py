@@ -3,6 +3,7 @@ from functools import wraps
 from pathlib import Path
 from typing import List
 from pypdf import PdfReader
+import rich
 import typer
 
 from pdfcli.utils.validators import ensure_extension, exit_with_error_message, path_validator
@@ -80,17 +81,34 @@ def create_path(path_name: str,*, default: str = "") -> str:
     except PermissionError:
       exit_with_error_message('Permission denied.')
     except Exception as e:
-      exit_with_error_message(e)
+      exit_with_error_message(str(e))
   
   return path_name # In case .strip() helps
 
 
 def read_pdf(filename:str) -> PdfReader:
   path = ensure_extension(filename)
-  reader = PdfReader(path)
+  base = Path(filename).name
 
-  if reader.is_encrypted:
-    password = typer.prompt(f"{file} is encrypted. Enter password")
-    reader.decrypt(password)
+  if not Path(path).exists():
+    exit_with_error_message(f"File not found: {path}")
+
+  try:
+    reader = PdfReader(path)
+  except Exception as e:
+    exit_with_error_message(str(e))
+
+  tries = 3
+  while reader.is_encrypted and tries > 0:
+    password = typer.prompt(f"{base} is encrypted. Enter password")
+    indicator = reader.decrypt(password)
+    if indicator == 0: # wrong password
+      tries -= 1
+      rich.print(f"[red]Wrong password. {tries} tries left.[/red]")
+    else:
+      break
   
-  return PdfReader
+  if reader.is_encrypted: # if file is still encrypted
+    exit_with_error_message("Failed to decrpyt PDF.")
+    
+  return reader
