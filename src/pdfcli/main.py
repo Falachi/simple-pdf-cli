@@ -2,6 +2,8 @@ from typing import List
 import typer
 from typing_extensions import Annotated
 
+from pdfcli.commands import encrypt
+
 from . import __version__
 import pdfcli.commands.merge as merge
 import pdfcli.commands.convert as convert
@@ -83,13 +85,36 @@ def split_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use
     ..., "--part","-p",
     help="Page or range to split. Please don't add any spaces. e.g '1-5,3-6,7'",
     prompt= "Parts (e.g 1-5,3-6,7)"
-  )],
+    )],
   output_folder: Annotated[str, typer.Option(
     ..., "-o", "--output", help="Output file location.",
     prompt="Output folder name"
     )] = "out_pdfs"):
   
   split.execute(input, output_folder, parts)
+
+# Encrypt PDF
+@app.command(help=encrypt.description, name="encrypt")
+def encrypt_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes for path with spaces.")],
+  output: Annotated[str, typer.Option(
+    ..., "-o", "--output", help="Output PDF file (path + filename).",
+    prompt="Output file name"
+    )],
+  password: Annotated[str, typer.Option(
+    ..., help="The password use to encrypt the file. No restrictions.",
+    prompt=True,
+    confirmation_prompt=True,
+    hide_input=True
+    )],
+  algorithm: Annotated[str, typer.Option(
+    ..., "-a", "--algorithm", help="The algorithm use for encryption.",
+    )] = encrypt.DEFAULT_ALGORITHM,
+  remove_source: Annotated[bool, typer.Option(
+    ..., "-rm", "--remove-source", help="Remove the original PDF after processing.",
+    metavar="remove-source",
+  )] = False):
+  
+  encrypt.execute(input, output, password, algorithm, remove_source)
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(
