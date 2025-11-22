@@ -108,7 +108,33 @@ def read_pdf(filename:str) -> PdfReader:
     else:
       break
   
-  if reader.is_encrypted: # if file is still encrypted
+  if indicator == 0: # if file is still encrypted
     exit_with_error_message("Failed to decrpyt PDF.")
     
   return reader
+
+def get_pdf_password(filename: str) -> str | None:
+  
+  base = Path(filename).name
+  try:
+    reader = PdfReader(filename)
+  except Exception as e:
+    exit_with_error_message(str(e))
+  
+  if not reader.is_encrypted:
+    return None
+
+  tries = 3
+  while reader.is_encrypted and tries > 0:
+    password = typer.prompt(f"{base} is encrypted. Enter password")
+    indicator = reader.decrypt(password)
+    if indicator == 0: # wrong password
+      tries -= 1
+      rich.print(f"[red]Wrong password. {tries} tries left.[/red]")
+    else:
+      break
+  
+  if indicator == 0: # if file is still encrypted
+    exit_with_error_message("Maximum password attempts exceeded.")
+  
+  return password
