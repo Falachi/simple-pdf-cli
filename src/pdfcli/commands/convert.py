@@ -5,7 +5,7 @@ from pdf2image import convert_from_path
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import create_path, get_pdf_password
+from pdfcli.utils.page_utils import check_output, create_path, get_pdf_password
 from pdfcli.utils.validators import ensure_extension
 
 img2pdf_desc = """
@@ -18,7 +18,7 @@ img2pdf_desc = """
 def img2pdf_execution(images: List[str], output: str) -> None:
     
   pil_images = []
-  output = ensure_extension(output)
+  output = check_output(output)
 
   with Progress(
     SpinnerColumn(),

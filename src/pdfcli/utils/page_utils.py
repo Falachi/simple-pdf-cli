@@ -6,7 +6,7 @@ from pypdf import PdfReader
 import rich
 import typer
 
-from pdfcli.utils.validators import ensure_extension, exit_with_error_message, path_validator
+from pdfcli.utils.validators import ensure_extension, exit_with_error_message, output_validator, path_validator
 
 # Returned a list without duplicates while in the same order based on the input.
 def dedupe_ordered(numbers :List[int]) -> List[int]:
@@ -85,7 +85,7 @@ def create_path(path_name: str,*, default: str = "") -> str:
   
   return path_name # In case .strip() helps
 
-
+# Checks if PDF is real, and get password if it's password protected
 def read_pdf(filename:str) -> PdfReader:
   path = ensure_extension(filename)
   base = Path(filename).name
@@ -138,3 +138,11 @@ def get_pdf_password(filename: str) -> str | None:
     exit_with_error_message("Maximum password attempts exceeded.")
   
   return password
+
+def check_output(path: str) -> str:
+  path = ensure_extension(path) # add .pdf in case user doesn't think of adding it
+  
+  if not output_validator(path):
+    exit_with_error_message()
+
+  return path

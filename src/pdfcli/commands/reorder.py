@@ -1,9 +1,9 @@
 import rich
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfWriter
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import add_remaining_pages, parse_page_ranges, read_pdf
-from pdfcli.utils.validators import ensure_extension, exit_with_error_message, page_validator
+from pdfcli.utils.page_utils import add_remaining_pages, check_output, parse_page_ranges, read_pdf
+from pdfcli.utils.validators import exit_with_error_message, page_validator
 
 description = """
   Reorder PDF pages.\n
@@ -20,7 +20,7 @@ def execute(input: str, output: str, order: str) -> None:
   reader = read_pdf(input)
   writer = PdfWriter()
 
-  output = ensure_extension(output)
+  output = check_output(output)
   total_pages = len(reader.pages)
   page_order = add_remaining_pages(
     parse_page_ranges(order, subtract_one=True),
