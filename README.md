@@ -97,6 +97,6 @@ pip install -e .
 - [x] Password protect
 - [ ] Allow a `.txt` file as input for arguments that accept multiple files
 - [ ] Edit PDF metadata
-- [ ] Upload to PyPI
+- [x] Upload to PyPI
 - [ ] Create a GUI version
 - Etc.
