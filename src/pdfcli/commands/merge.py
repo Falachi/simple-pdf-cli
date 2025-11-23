@@ -1,9 +1,9 @@
 from typing import List
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfWriter
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.validators import ensure_extension
+from pdfcli.utils.page_utils import check_output, read_pdf
 
 description = """
   Merge multiple PDF files into one.\n
@@ -14,7 +14,7 @@ description = """
 def execute(inputs: List[str], output: str) -> None:
 
   writer = PdfWriter()
-  output = ensure_extension(output)
+  output = check_output(output)
   
   with Progress(
     SpinnerColumn(),
@@ -23,7 +23,7 @@ def execute(inputs: List[str], output: str) -> None:
   ) as progress:
     progress.add_task(description="Merging...", total=None)
     for pdf in inputs:
-      reader = PdfReader(pdf)
+      reader = read_pdf(pdf)
       for page in reader.pages:
         writer.add_page(page)
     with open(output, "wb") as f:

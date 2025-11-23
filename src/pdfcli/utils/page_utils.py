@@ -2,9 +2,11 @@ from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
 from typing import List
+from pypdf import PdfReader
+import rich
 import typer
 
-from pdfcli.utils.validators import exit_with_error_message, path_validator
+from pdfcli.utils.validators import ensure_extension, exit_with_error_message, output_validator, path_validator
 
 # Returned a list without duplicates while in the same order based on the input.
 def dedupe_ordered(numbers :List[int]) -> List[int]:
@@ -79,6 +81,74 @@ def create_path(path_name: str,*, default: str = "") -> str:
     except PermissionError:
       exit_with_error_message('Permission denied.')
     except Exception as e:
-      exit_with_error_message(e)
+      exit_with_error_message(str(e))
   
   return path_name # In case .strip() helps
+
+# Checks if PDF is real, and get password if it's password protected
+def read_pdf(filename:str, *, password: str | None = None) -> PdfReader:
+  path = ensure_extension(filename)
+  base = Path(filename).name
+
+  if not Path(path).exists():
+    exit_with_error_message(f"File not found: {path}")
+
+  try:
+    reader = PdfReader(path)
+  except Exception as e:
+    exit_with_error_message(str(e))
+  
+  tries = 3
+  indicator = -1 # default value for no password
+
+  while reader.is_encrypted and tries > 0:
+
+    if not password:
+      password = typer.prompt(f"{base} is encrypted. Enter password", hide_input=True)
+    
+    indicator = reader.decrypt(password)
+    
+    if indicator == 0: # wrong password
+      tries -= 1
+      rich.print(f"[red]Wrong password. {tries} tries left.[/red]")
+    else:
+      break
+  
+  if indicator == 0: # if file is still encrypted
+    exit_with_error_message("Failed to decrpyt PDF.")
+    
+  return reader
+
+def get_pdf_password(filename: str) -> str | None:
+  
+  base = Path(filename).name
+  try:
+    reader = PdfReader(filename)
+  except Exception as e:
+    exit_with_error_message(str(e))
+  
+  if not reader.is_encrypted:
+    return None
+
+  tries = 3
+  while reader.is_encrypted and tries > 0:
+    password = typer.prompt(f"{base} is encrypted. Enter password")
+    indicator = reader.decrypt(password)
+    if indicator == 0: # wrong password
+      tries -= 1
+      rich.print(f"[red]Wrong password. {tries} tries left.[/red]")
+    else:
+      break
+  
+  if indicator == 0: # if file is still encrypted
+    exit_with_error_message("Maximum password attempts exceeded.")
+  
+  return password
+
+def check_output(path: str) -> str:
+  path = ensure_extension(path) # add .pdf in case user doesn't think of adding it
+  
+  if not output_validator(path):
+    exit_with_error_message()
+
+  return path

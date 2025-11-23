@@ -1,10 +1,10 @@
 
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfWriter
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import parse_page_ranges
-from pdfcli.utils.validators import ensure_extension, exit_with_error_message, page_validator
+from pdfcli.utils.page_utils import check_output, parse_page_ranges, read_pdf
+from pdfcli.utils.validators import exit_with_error_message, page_validator
 
 description = """
   Trim or reorder pages of a PDF using page range syntax.\n
@@ -17,11 +17,11 @@ description = """
 # Trim PDFs
 def execute(input: str, output: str, pages: str) -> None:
   
-  reader =  PdfReader(input)
+  reader =  read_pdf(input)
   writer = PdfWriter()
 
   page_order = parse_page_ranges(pages, dups=True, subtract_one=True)
-  output = ensure_extension(output)
+  output = check_output(output)
 
   if not page_validator(page_order,len(reader.pages)):
     exit_with_error_message("Page is out of range.")

@@ -1,4 +1,3 @@
-
 # File validation and correction
 import re
 from typing import List
@@ -13,14 +12,17 @@ def ensure_extension(filename: str, *, extension: str = ".pdf") -> str:
 
   filename = filename.strip()
 
-  if not is_valid_filename(filename, no_ext=False):
+  base = Path(filename).name
+
+  if not is_valid_filename(base, no_ext=False):
     exit_with_error_message("File name invalid.")
   
-  if not filename.lower().endswith(extension):
-    return filename + extension
+  if not base.lower().endswith(extension):
+    filename = str(Path(filename).with_name(base + extension))
+  
   return filename
 
-def exit_with_error_message(reason: str) -> None:
+def exit_with_error_message(reason: str = "") -> None:
   rich.print(f"[red]Error! {reason}\nPlease check and try again.[/red]")
   raise typer.Exit(code=1)
 
@@ -77,4 +79,17 @@ def page_validator(pages: List[int], total_pages: int) -> bool:
   if min(pages) < 0 or max(pages) >= total_pages:
     return False
   
+  return True
+
+# output validator
+def output_validator(path: str) -> bool:
+
+  dir_path = Path(path)
+
+  if dir_path.is_dir():
+    exit_with_error_message("Output path points to a directory, not a file.")
+
+  if dir_path.exists():
+    return typer.confirm("File already exist. Overwrite?")
+
   return True

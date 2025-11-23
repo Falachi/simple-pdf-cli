@@ -1,6 +1,15 @@
 import pytest
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
 from pdfcli.utils.validators import ensure_extension, page_validator, path_validator
+from typer.testing import CliRunner
+from pdfcli.main import app
+
+runner = CliRunner()
+
+# test if the app can just run
+def test_app():
+  result = runner.invoke(app)
+  assert result.exit_code == 0
 
 # parse_page_ranges tests
 def test_simple_range():
