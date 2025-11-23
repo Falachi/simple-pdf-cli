@@ -2,14 +2,8 @@ from typing import List
 import typer
 from typing_extensions import Annotated
 
-from pdfcli.commands import encrypt
-
 from . import __version__
-import pdfcli.commands.merge as merge
-import pdfcli.commands.convert as convert
-import pdfcli.commands.reorder as reorder
-import pdfcli.commands.trim as trim
-import pdfcli.commands.split as split
+from pdfcli.commands import merge, convert, reorder, trim, split, decrypt, encrypt
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
@@ -101,7 +95,7 @@ def encrypt_command(input: Annotated[str, typer.Argument(help="Input PDF file. U
     prompt="Output file name"
     )],
   password: Annotated[str, typer.Option(
-    ..., "-p", "--password", help="The password use to encrypt the file. No restriction.",
+    ..., "-p", "--password", help="The password use to encrypt the file. Use quotes if password has whitespace. No restriction.",
     prompt=True,
     confirmation_prompt=True,
     hide_input=True
@@ -115,6 +109,25 @@ def encrypt_command(input: Annotated[str, typer.Argument(help="Input PDF file. U
   )] = False):
   
   encrypt.execute(input, output, password, algorithm, remove_source)
+
+# Decrypt PDF
+@app.command(help=decrypt.description, name="decrypt")
+def decrypt_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes for path with spaces.")],
+  output: Annotated[str, typer.Option(
+    ..., "-o", "--output", help="Output PDF file (path + filename).",
+    prompt="Output file name"
+    )],
+  password: Annotated[str, typer.Option(
+    ..., "-p", "--password", help="The password to read and decrypt the PDF. Use quotes if password has whitespace.",
+    prompt=True,
+    hide_input=True
+    )],
+  remove_source: Annotated[bool, typer.Option(
+    ..., "-rm", "--remove-source", help="Remove the original PDF after processing.",
+    metavar="remove-source",
+  )] = False):
+  
+  decrypt.execute(input, output, password, remove_source)
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(

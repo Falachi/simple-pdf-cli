@@ -11,7 +11,7 @@ description = """
 Encrypt the PDF with a password.\n
 For privacy, omit writing the password with the flag. Supports RC4-40, RC4-128, AES-128, AES-256-R5, and AES-256. Default to AES-256-R5.\n
 Example:\n
-pdfcli encrpyt file.pdf -o output.pdf -a AES-256-R5
+pdfcli encrpyt file.pdf -o output.pdf -a AES-256-R5 -p password1
 """
 
 DEFAULT_ALGORITHM = "AES-256-R5"
