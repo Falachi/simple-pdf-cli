@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["pdfcli"]
+packages = ["src/pdfcli"]
 
 [project]
 name = "simple-pdf-cli"

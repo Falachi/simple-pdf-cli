@@ -2,7 +2,7 @@ from typing import List
 import typer
 from typing_extensions import Annotated
 
-from . import __version__
+from pdfcli import __version__
 from pdfcli.commands import merge, convert, reorder, trim, split, decrypt, encrypt
 
 app = typer.Typer(help=
