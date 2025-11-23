@@ -61,6 +61,34 @@ pdfcli encrypt file.pdf -o output.pdf -p password1
 pdfcli decrypt file.pdf -o output.pdf -p password1
 ```
 
+## Installation
+
+**Using pip (recommended):**
+
+```bash
+pip install simple-pdf-cli
+```
+
+**Manual Installation**
+
+1. Clone the repo
+
+```bash
+git clone https://github.com/Falachi/simple-pdf-cli.git
+```
+
+2. Go to project directory
+
+```bash
+cd simple-pdf-cli
+```
+
+3. Install package
+
+```bash
+pip install -e .
+```
+
 ## To-Do List
 
 - [x] Implement proper type and error checking
