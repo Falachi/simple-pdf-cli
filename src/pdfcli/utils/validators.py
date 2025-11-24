@@ -55,10 +55,14 @@ def path_validator(path_name: str, default: str = "") -> bool:
       path_name = default
 
   parts = path_name.replace("\\", "/").split("/")
-
+  
   for part in parts:
     if not part:
       continue
+    
+    if part in (".",".."):
+      continue
+
     if part.upper() in WINDOWS_RESERVED:
       return False
     
