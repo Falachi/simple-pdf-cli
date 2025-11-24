@@ -1,9 +1,12 @@
 from typing import List
 import typer
 from typing_extensions import Annotated
+from importlib.metadata import version
 
-from pdfcli import __version__
 from pdfcli.commands import merge, convert, reorder, trim, split, decrypt, encrypt
+
+
+__version__ = version("pdfcli")
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
