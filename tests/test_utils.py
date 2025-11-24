@@ -6,10 +6,15 @@ from pdfcli.main import app
 
 runner = CliRunner()
 
+ENCRYPTION_PASSWORD = "12345"
+
 # test if the app can just run
 def test_app():
   result = runner.invoke(app)
   assert result.exit_code == 0
+
+
+
 
 # parse_page_ranges tests
 def test_simple_range():
