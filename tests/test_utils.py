@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import pytest
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
@@ -9,22 +10,24 @@ from pdfcli.main import app
 
 runner = CliRunner()
 
-PDF_SAMPLE_8_PAGE = "./input/tests/8pages.pdf"
-PDF_SAMPLE_1_PAGE_1 = "./input/tests/1pages-1.pdf"
-PDF_SAMPLE_1_PAGE_2 = "./input/tests/1pages-2.pdf"
-PHOTO_SAMPLE_1 = "./input/tests/photo1.pdf"
-PHOTO_SAMPLE_2 = "./input/tests/photo2.pdf"
-PHOTO_SAMPLE_3 = "./input/tests/photo3.pdf"
-PDF_SAMPLE_PROTECTED = "./input/tests/protected.pdf"
+BASE = Path(__file__).parent
 
-EXPECTED_MERGE = "./input/tests/expected/merge.pdf"
-EXPECTED_IMG2PDF = "./input/tests/expected/img2pdf.pdf"
-EXPECTED_PDF2IMG = "./input/tests/expected/out-img"
-EXPECTED_REORDER = "./input/tests/expected/reorder.pdf"
-EXPECTED_TRIM = "./input/tests/expected/trim.pdf"
-EXPECTED_SPLIT = "./input/tests/expected/split"
-EXPECTED_ENCRYPT = "./input/tests/expected/encrypt.pdf"
-EXPECTED_DECRYPT = "./input/tests/expected/decrypt.pdf"
+PDF_SAMPLE_8_PAGE = str(BASE / "data" / "input" / "8pages.pdf")
+PDF_SAMPLE_1_PAGE_1 = str(BASE / "data" / "input" / "1page-1.pdf")
+PDF_SAMPLE_1_PAGE_2 = str(BASE / "data" / "input" / "1page-2.pdf")
+PHOTO_SAMPLE_1 = str(BASE / "data" / "input" / "photo1.pdf")
+PHOTO_SAMPLE_2 = str(BASE / "data" / "input" / "photo2.pdf")
+PHOTO_SAMPLE_3 = str(BASE / "data" / "input" / "photo3.pdf")
+PDF_SAMPLE_PROTECTED = str(BASE / "data" / "input" / "protected.pdf")
+
+EXPECTED_MERGE = str(BASE / "data" / "expected" / "merge.pdf")
+EXPECTED_IMG2PDF = str(BASE / "data" / "expected" / "img2pdf.pdf")
+EXPECTED_PDF2IMG = str(BASE / "data" / "expected" / "out-img")
+EXPECTED_REORDER = str(BASE / "data" / "expected" / "reorder.pdf")
+EXPECTED_TRIM = str(BASE / "data" / "expected" / "trim.pdf")
+EXPECTED_SPLIT = str(BASE / "data" / "expected" / "split")
+EXPECTED_ENCRYPT = str(BASE / "data" / "expected" / "encrypt.pdf")
+EXPECTED_DECRYPT = str(BASE / "data" / "expected" / "decrypt.pdf")
 
 ENCRYPTION_PASSWORD = "12345"
 
@@ -36,26 +39,28 @@ def test_app():
 # test merge
 class TestMergeCommand:
 
-  output_name = '/merge.pdf'
+  output_name = "merge.pdf"
 
   def test_merge_help(self):
     result = runner.invoke(app, ['merge', '--help'])
     assert result.exit_code == 0
 
   def test_merge(self, tmp_path: Path):
-    output = str(tmp_path) + self.output_name
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
     result = runner.invoke(app, [
        'merge', 
        PDF_SAMPLE_1_PAGE_1,
        PDF_SAMPLE_1_PAGE_2,
        '--output', 
-       output
-    ]) 
+       output_str
+    ])
+    
     assert result.exit_code == 0
+    assert output.exists()
     assert "Successfully" in result.output
-    assert filecmp.cmp()
-
-
+    assert filecmp.cmp(output, EXPECTED_MERGE, shallow=False)
   
 
 # parse_page_ranges tests
