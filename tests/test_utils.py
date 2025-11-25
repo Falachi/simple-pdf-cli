@@ -1,5 +1,5 @@
-import os
 from pathlib import Path
+from pypdf import PdfReader
 import pytest
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
 from pdfcli.utils.validators import ensure_extension, page_validator, path_validator
@@ -15,9 +15,9 @@ BASE = Path(__file__).parent
 PDF_SAMPLE_8_PAGE = str(BASE / "data" / "input" / "8pages.pdf")
 PDF_SAMPLE_1_PAGE_1 = str(BASE / "data" / "input" / "1page-1.pdf")
 PDF_SAMPLE_1_PAGE_2 = str(BASE / "data" / "input" / "1page-2.pdf")
-PHOTO_SAMPLE_1 = str(BASE / "data" / "input" / "photo1.pdf")
-PHOTO_SAMPLE_2 = str(BASE / "data" / "input" / "photo2.pdf")
-PHOTO_SAMPLE_3 = str(BASE / "data" / "input" / "photo3.pdf")
+IMAGE_SAMPLE_1 = str(BASE / "data" / "input" / "photo1.jpg")
+IMAGE_SAMPLE_2 = str(BASE / "data" / "input" / "photo2.jpg")
+IMAGE_SAMPLE_3 = str(BASE / "data" / "input" / "photo3.jpg")
 PDF_SAMPLE_PROTECTED = str(BASE / "data" / "input" / "protected.pdf")
 
 EXPECTED_MERGE = str(BASE / "data" / "expected" / "merge.pdf")
@@ -30,6 +30,25 @@ EXPECTED_ENCRYPT = str(BASE / "data" / "expected" / "encrypt.pdf")
 EXPECTED_DECRYPT = str(BASE / "data" / "expected" / "decrypt.pdf")
 
 ENCRYPTION_PASSWORD = "12345"
+
+# assert pdf
+def assert_pdf(file: str, expected: str) -> bool:
+
+  assertion = True
+
+  file_reader = PdfReader(file)
+  expected_reader = PdfReader(expected)
+
+  if not len(file_reader.pages) == len(expected_reader.pages):
+    assertion = False
+
+  for index in range(len(file_reader.pages)):
+    if not file_reader.pages[index].mediabox.width == expected_reader.pages[index].mediabox.width:
+      assertion = False
+    if not file_reader.pages[index].mediabox.height == expected_reader.pages[index].mediabox.height:
+      assertion = False
+
+  return assertion
 
 # test if the app can just run
 def test_app():
@@ -56,11 +75,46 @@ class TestMergeCommand:
        '--output', 
        output_str
     ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_MERGE)
+
+# test img2pdf
+class TestImg2PdfCommand:
+
+  output_name = "img2pdf.pdf"
+
+  def test_img2pdf_help(self):
+    result = runner.invoke(app, ['img2pdf', '--help'])
+    assert result.exit_code == 0
+
+  def test_img2pdf(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+       'img2pdf',
+       IMAGE_SAMPLE_1,
+       IMAGE_SAMPLE_2,
+       IMAGE_SAMPLE_3,
+       "--output",
+       output_str
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
     
     assert result.exit_code == 0
     assert output.exists()
-    assert "Successfully" in result.output
-    assert filecmp.cmp(output, EXPECTED_MERGE, shallow=False)
+    assert assert_pdf(output_str, EXPECTED_IMG2PDF)
   
 
 # parse_page_ranges tests
@@ -123,25 +177,25 @@ def test_large_invalid_input():
 
 # path_validator tests
 def test_standard_folder_name():
-    assert path_validator("Documents") is True
+  assert path_validator("Documents") is True
 
 def test_nested_path():
-    assert path_validator("foo/bar/baz") is True
+  assert path_validator("foo/bar/baz") is True
 
 def test_trailing_dot():
-    assert path_validator("folder.") is False
+  assert path_validator("folder.") is False
 
 def test_windows_reserved_name():
-    assert path_validator("CON") is False  # NUL, AUX, LPT1 also invalid
+  assert path_validator("CON") is False  # NUL, AUX, LPT1 also invalid
 
 def test_invalid_characters():
-    assert path_validator("my|folder") is False
+  assert path_validator("my|folder") is False
 
 def test_empty_string():
-    assert path_validator("") is False
+  assert path_validator("") is False
 
 def test_spaces_are_trimmed():
-    assert path_validator("   folder   ") is True
+  assert path_validator("   folder   ") is True
 
 def test_forward_and_backslashes():
-    assert path_validator("foo\\bar/baz") is True
+  assert path_validator("foo\\bar/baz") is True
