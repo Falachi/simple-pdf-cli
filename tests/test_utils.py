@@ -1,10 +1,30 @@
+from pathlib import Path
 import pytest
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
 from pdfcli.utils.validators import ensure_extension, page_validator, path_validator
 from typer.testing import CliRunner
+import filecmp
+
 from pdfcli.main import app
 
 runner = CliRunner()
+
+PDF_SAMPLE_8_PAGE = "./input/tests/8pages.pdf"
+PDF_SAMPLE_1_PAGE_1 = "./input/tests/1pages-1.pdf"
+PDF_SAMPLE_1_PAGE_2 = "./input/tests/1pages-2.pdf"
+PHOTO_SAMPLE_1 = "./input/tests/photo1.pdf"
+PHOTO_SAMPLE_2 = "./input/tests/photo2.pdf"
+PHOTO_SAMPLE_3 = "./input/tests/photo3.pdf"
+PDF_SAMPLE_PROTECTED = "./input/tests/protected.pdf"
+
+EXPECTED_MERGE = "./input/tests/expected/merge.pdf"
+EXPECTED_IMG2PDF = "./input/tests/expected/img2pdf.pdf"
+EXPECTED_PDF2IMG = "./input/tests/expected/out-img"
+EXPECTED_REORDER = "./input/tests/expected/reorder.pdf"
+EXPECTED_TRIM = "./input/tests/expected/trim.pdf"
+EXPECTED_SPLIT = "./input/tests/expected/split"
+EXPECTED_ENCRYPT = "./input/tests/expected/encrypt.pdf"
+EXPECTED_DECRYPT = "./input/tests/expected/decrypt.pdf"
 
 ENCRYPTION_PASSWORD = "12345"
 
@@ -13,8 +33,30 @@ def test_app():
   result = runner.invoke(app)
   assert result.exit_code == 0
 
+# test merge
+class TestMergeCommand:
+
+  output_name = '/merge.pdf'
+
+  def test_merge_help(self):
+    result = runner.invoke(app, ['merge', '--help'])
+    assert result.exit_code == 0
+
+  def test_merge(self, tmp_path: Path):
+    output = str(tmp_path) + self.output_name
+    result = runner.invoke(app, [
+       'merge', 
+       PDF_SAMPLE_1_PAGE_1,
+       PDF_SAMPLE_1_PAGE_2,
+       '--output', 
+       output
+    ]) 
+    assert result.exit_code == 0
+    assert "Successfully" in result.output
+    assert filecmp.cmp()
 
 
+  
 
 # parse_page_ranges tests
 def test_simple_range():
