@@ -4,7 +4,6 @@ import pytest
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
 from pdfcli.utils.validators import ensure_extension, page_validator, path_validator
 from typer.testing import CliRunner
-import filecmp
 
 from pdfcli.main import app
 
@@ -50,6 +49,9 @@ def assert_pdf(file: str, expected: str) -> bool:
 
   return assertion
 
+def assert_folder_files(folder: str, expected_folder: str, *, limit_to: str) -> bool:
+  return True
+
 # test if the app can just run
 def test_app():
   result = runner.invoke(app)
@@ -91,7 +93,7 @@ class TestImg2PdfCommand:
   output_name = "img2pdf.pdf"
 
   def test_img2pdf_help(self):
-    result = runner.invoke(app, ['img2pdf', '--help'])
+    result = runner.invoke(app, ['pdf2img', '--help'])
     assert result.exit_code == 0
 
   def test_img2pdf(self, tmp_path: Path):
@@ -99,7 +101,7 @@ class TestImg2PdfCommand:
     output_str = str(output)
 
     result = runner.invoke(app, [
-       'img2pdf',
+       "img2pdf",
        IMAGE_SAMPLE_1,
        IMAGE_SAMPLE_2,
        IMAGE_SAMPLE_3,
@@ -115,6 +117,40 @@ class TestImg2PdfCommand:
     assert result.exit_code == 0
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_IMG2PDF)
+
+# test img2pdf
+class TestPdf2ImgCommand:
+
+  output_name = "out-img"
+
+  def test_pdf2img_help(self):
+    result = runner.invoke(app, ['pdf2img', '--help'])
+    assert result.exit_code == 0
+
+  def test_pdf2img(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+       'pdf2img',
+       PDF_SAMPLE_8_PAGE,
+       "--output",
+       output_str
+    ])
+
+    input_reader = PdfReader(PDF_SAMPLE_8_PAGE)
+
+    output_file_count = sum(1 for _ in output.glob("*.png"))
+
+    print(output)
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert len(input_reader.pages) == output_file_count
   
 
 # parse_page_ranges tests

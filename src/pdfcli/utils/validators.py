@@ -43,6 +43,7 @@ WINDOWS_RESERVED = {
   *(f"LPT{i}" for i in range(1, 10))
 }
 
+DRIVE_RE = re.compile(r"^[A-Za-z]:")
 
 # Folder validation
 def path_validator(path_name: str, default: str = "") -> bool:
@@ -53,6 +54,12 @@ def path_validator(path_name: str, default: str = "") -> bool:
       return False
     else:
       path_name = default
+
+  drive = None
+  match = DRIVE_RE.match(path_name)
+  if match:
+    drive = match.group(0)
+    path_name = path_name[len(drive):]
 
   parts = path_name.replace("\\", "/").split("/")
   
@@ -71,7 +78,7 @@ def path_validator(path_name: str, default: str = "") -> bool:
     
     if re.search(INVALID_CHARS, part):
       return False
-  
+
   return True
 
 # assumes the list is 0-indexed
