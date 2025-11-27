@@ -35,8 +35,6 @@ def assert_pdf(pdf_path: str, expected_pdf_path: str,
               *, validate_page_count: bool = True, 
               expected_page_count: int | None = None) -> bool:
 
-  assertion = True
-
   file_reader = PdfReader(pdf_path)
   expected_reader = PdfReader(expected_pdf_path)
 
@@ -47,25 +45,43 @@ def assert_pdf(pdf_path: str, expected_pdf_path: str,
   )
 
   if validate_page_count and len(file_reader.pages) != expected_page_count:
-    assertion = False
+    return False
 
   for index in range(len(file_reader.pages)):
     if not file_reader.pages[index].mediabox.width == expected_reader.pages[index].mediabox.width:
-      assertion = False
+      return False
     if not file_reader.pages[index].mediabox.height == expected_reader.pages[index].mediabox.height:
-      assertion = False
+      return False
 
-  return assertion
-
-def assert_folder_files(folder: str, expected_folder: str, *, limit_to: str) -> bool:
   return True
+
+def assert_folder_content(folder_path: str, expected_folder_path:str, *, file_ext: str) -> bool:
+
+  testing_path = Path(folder_path)
+  expected_path = Path(expected_folder_path)
+
+  testing_files = sorted(p.name for p in testing_path.glob(f"*{file_ext}"))
+  expected_files = sorted(p.name for p in expected_path.glob(f"*{file_ext}"))
+
+  testing_file_count = sum(1 for _ in testing_path.glob(f"*{file_ext}"))
+  expected_file_count = sum(1 for _ in expected_path.glob(f"*{file_ext}"))
+
+  if testing_file_count != expected_file_count:
+    return False
+  
+  if testing_files != expected_files:
+    return False
+  
+  #NOTE: put more folder assertions? not sure what else to check
+
+  return True
+
 
 # test if the app can just run
 def test_app():
   result = runner.invoke(app)
   assert result.exit_code == 0
 
-# test merge
 class TestMergeCommand:
 
   output_name = "merge.pdf"
@@ -95,7 +111,6 @@ class TestMergeCommand:
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_MERGE)
 
-# test img2pdf
 class TestImg2PdfCommand:
 
   output_name = "img2pdf.pdf"
@@ -126,7 +141,6 @@ class TestImg2PdfCommand:
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_IMG2PDF)
 
-# test pdf2img
 class TestPdf2ImgCommand:
 
   output_name = "out-img"
@@ -146,10 +160,6 @@ class TestPdf2ImgCommand:
        output_str
     ])
 
-    input_reader = PdfReader(PDF_SAMPLE_8_PAGE)
-
-    output_file_count = sum(1 for _ in output.glob("*.png"))
-
     print(output)
     print(result.output)
     if result.exception:
@@ -158,18 +168,17 @@ class TestPdf2ImgCommand:
     
     assert result.exit_code == 0
     assert output.exists()
-    assert len(input_reader.pages) == output_file_count
+    assert assert_folder_content(output_str, EXPECTED_PDF2IMG, file_ext=".png")
 
-# test reorder
 class TestReorderCommand:
 
   output_name = "reorder.pdf"
 
-  def test_img2pdf_help(self):
+  def test_reorder_help(self):
     result = runner.invoke(app, ['reorder', '--help'])
     assert result.exit_code == 0
 
-  def test_img2pdf(self, tmp_path: Path):
+  def test_reorder(self, tmp_path: Path):
     output = tmp_path / self.output_name
     output_str = str(output)
 
@@ -190,6 +199,36 @@ class TestReorderCommand:
     assert result.exit_code == 0
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_REORDER)
+
+class TestSplitCommand:
+
+  output_name = "split"
+
+  def test_split_help(self):
+    result = runner.invoke(app, ['split', '--help'])
+    assert result.exit_code == 0
+
+  def test_split(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+      "split",
+      PDF_SAMPLE_8_PAGE,
+      "--output",
+      output_str,
+      "--part",
+      "1,5-8,3-4"
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_folder_content(output_str, EXPECTED_SPLIT, file_ext=".pdf")
 
 # parse_page_ranges tests
 def test_simple_range():
