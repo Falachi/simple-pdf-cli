@@ -31,14 +31,22 @@ EXPECTED_DECRYPT = str(BASE / "data" / "expected" / "decrypt.pdf")
 ENCRYPTION_PASSWORD = "12345"
 
 # assert pdf
-def assert_pdf(file: str, expected: str) -> bool:
+def assert_pdf(pdf_path: str, expected_pdf_path: str, 
+              *, validate_page_count: bool = True, 
+              expected_page_count: int | None = None) -> bool:
 
   assertion = True
 
-  file_reader = PdfReader(file)
-  expected_reader = PdfReader(expected)
+  file_reader = PdfReader(pdf_path)
+  expected_reader = PdfReader(expected_pdf_path)
 
-  if not len(file_reader.pages) == len(expected_reader.pages):
+  expected_page_count = (
+    expected_page_count
+    if expected_page_count is not None
+    else len(expected_reader.pages)
+  )
+
+  if validate_page_count and len(file_reader.pages) != expected_page_count:
     assertion = False
 
   for index in range(len(file_reader.pages)):
@@ -118,7 +126,7 @@ class TestImg2PdfCommand:
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_IMG2PDF)
 
-# test img2pdf
+# test pdf2img
 class TestPdf2ImgCommand:
 
   output_name = "out-img"
@@ -151,7 +159,37 @@ class TestPdf2ImgCommand:
     assert result.exit_code == 0
     assert output.exists()
     assert len(input_reader.pages) == output_file_count
-  
+
+# test reorder
+class TestReorderCommand:
+
+  output_name = "reorder.pdf"
+
+  def test_img2pdf_help(self):
+    result = runner.invoke(app, ['reorder', '--help'])
+    assert result.exit_code == 0
+
+  def test_img2pdf(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+      "reorder",
+      PDF_SAMPLE_8_PAGE,
+      "--output",
+      output_str,
+      "--order",
+      "4,3,2,5,7,8,1"
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_REORDER)
 
 # parse_page_ranges tests
 def test_simple_range():
