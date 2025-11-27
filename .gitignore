@@ -1,11 +1,7 @@
 venv/
 samples/
 __pycache__/
+.pytest_cache
 
 *.pyo
 *.pyd
-
-# sample test files
-*.pdf
-*.png
-*.jpg

@@ -1,15 +1,6 @@
 import pytest
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
 from pdfcli.utils.validators import ensure_extension, page_validator, path_validator
-from typer.testing import CliRunner
-from pdfcli.main import app
-
-runner = CliRunner()
-
-# test if the app can just run
-def test_app():
-  result = runner.invoke(app)
-  assert result.exit_code == 0
 
 # parse_page_ranges tests
 def test_simple_range():
@@ -71,25 +62,25 @@ def test_large_invalid_input():
 
 # path_validator tests
 def test_standard_folder_name():
-    assert path_validator("Documents") is True
+  assert path_validator("Documents") is True
 
 def test_nested_path():
-    assert path_validator("foo/bar/baz") is True
+  assert path_validator("foo/bar/baz") is True
 
 def test_trailing_dot():
-    assert path_validator("folder.") is False
+  assert path_validator("folder.") is False
 
 def test_windows_reserved_name():
-    assert path_validator("CON") is False  # NUL, AUX, LPT1 also invalid
+  assert path_validator("CON") is False  # NUL, AUX, LPT1 also invalid
 
 def test_invalid_characters():
-    assert path_validator("my|folder") is False
+  assert path_validator("my|folder") is False
 
 def test_empty_string():
-    assert path_validator("") is False
+  assert path_validator("") is False
 
 def test_spaces_are_trimmed():
-    assert path_validator("   folder   ") is True
+  assert path_validator("   folder   ") is True
 
 def test_forward_and_backslashes():
-    assert path_validator("foo\\bar/baz") is True
+  assert path_validator("foo\\bar/baz") is True

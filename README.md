@@ -11,6 +11,8 @@ Simple PDF-CLI is a simple CLI app to edit PDFs directly from the terminal. Curr
 - Encrypt a PDF
 - Decrypt a PDF
 
+Testing photos by [Pavel Moiseev](https://unsplash.com/@pavelmois?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on Unsplash.
+
 ## Usage Examples
 
 **Merge**
