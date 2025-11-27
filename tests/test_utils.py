@@ -170,6 +170,36 @@ class TestPdf2ImgCommand:
     assert output.exists()
     assert assert_folder_content(output_str, EXPECTED_PDF2IMG, file_ext=".png")
 
+class TestTrimCommand:
+
+  output_name = "trim.pdf"
+
+  def test_trim_help(self):
+    result = runner.invoke(app, ['trim', '--help'])
+    assert result.exit_code == 0
+
+  def test_trim(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+      "trim",
+      PDF_SAMPLE_8_PAGE,
+      "--output",
+      output_str,
+      "--page",
+      "5-6,3,1,8-5"
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_TRIM)
+
 class TestReorderCommand:
 
   output_name = "reorder.pdf"
