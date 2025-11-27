@@ -278,7 +278,7 @@ class TestSplitCommand:
     assert output.exists()
     assert assert_folder_content(output_str, EXPECTED_SPLIT, file_ext=".pdf")
 
-class TesteEcrpytCommand:
+class TesteEncryptCommand:
 
   output_name = "encrypt.pdf"
 
@@ -313,13 +313,72 @@ class TesteEcrpytCommand:
     output = tmp_path / output_name
     output_str = str(output)
 
-    copied_file_name = "copy.pdf"
+    copied_file_name = "copy-encryption-test.pdf"
     copy_to = tmp_path / copied_file_name
 
     shutil.copyfile(PDF_SAMPLE_8_PAGE, str(copy_to))
 
     result = runner.invoke(app, [
       "encrypt",
+      str(copy_to),
+      "--output",
+      output_str,
+      "--password",
+      ENCRYPTION_PASSWORD,
+      "--remove-source"
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert not copy_to.exists() # check if file is removed or not
+
+class TesteDecryptCommand:
+
+  output_name = "decrypt.pdf"
+
+  def test_decrypt_help(self):
+    result = runner.invoke(app, ['decrypt', '--help'])
+    assert result.exit_code == 0
+
+  def test_decrypt(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+      "decrypt",
+      PDF_SAMPLE_PROTECTED,
+      "--output",
+      output_str,
+      "--password",
+      ENCRYPTION_PASSWORD
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_DECRYPT, password=ENCRYPTION_PASSWORD)
+
+  def test_remove_after(self, tmp_path: Path):
+    output_name = "decrypt-rm_test.pdf"
+    output = tmp_path / output_name
+    output_str = str(output)
+
+    copied_file_name = "copy-decryption-test.pdf"
+    copy_to = tmp_path / copied_file_name
+
+    shutil.copyfile(PDF_SAMPLE_PROTECTED, str(copy_to))
+
+    result = runner.invoke(app, [
+      "decrypt",
       str(copy_to),
       "--output",
       output_str,
