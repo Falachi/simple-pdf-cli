@@ -1,5 +1,6 @@
+from rich.console import Console
 
-import rich
+console = Console()
 
 def rprint(message: str,*, status: int | None = None) -> None:
 
@@ -8,4 +9,4 @@ def rprint(message: str,*, status: int | None = None) -> None:
     1: "red"
   }
 
-  rich.print(message, styles=styles.get(status, None))
+  console.print(message, style=styles[status])

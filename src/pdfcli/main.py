@@ -136,11 +136,17 @@ def compress_command(input: Annotated[str, typer.Argument(help="Input PDF files.
       ...,"-o", "--output", help="Output PDF file (path + filename).",
       prompt="Output file name"
   )],
+  quality: Annotated[str, typer.Option(
+    ...,"--quality","-q", 
+    help="The quality of images in the PDF. Can be set with presets or value. Check description for more info.",
+  )] = "medium",
   level: Annotated[int, typer.Option(
-    ...,"--level","-l", help="Level of compression. Range is between 0 to 9, where 0 is no compression, and 9 is highest compression."
-  )]):
+    ...,"--level","-l", 
+    help="Level of compression. Range is between 0 to 9, where 0 is no compression, and 9 is highest compression.",
+  )] = 6,
+  ):
   
-  compress.execute(input, output, level)
+  compress.execute(input, output, level, quality)
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(
