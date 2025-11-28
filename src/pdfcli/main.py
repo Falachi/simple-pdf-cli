@@ -3,7 +3,7 @@ import typer
 from typing_extensions import Annotated
 
 from pdfcli import __version__
-from pdfcli.commands import merge, convert, reorder, trim, split, decrypt, encrypt
+from pdfcli.commands import compress, merge, convert, reorder, trim, split, decrypt, encrypt
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
@@ -128,6 +128,19 @@ def decrypt_command(input: Annotated[str, typer.Argument(help="Input PDF file. U
   )] = False):
   
   decrypt.execute(input, output, password, remove_source)
+
+# Compress PDF
+@app.command(help=compress.description, name="compress")
+def compress_command(input: Annotated[str, typer.Argument(help="Input PDF files. Space-separated. Use quotes for paths with spaces.")],
+  output: Annotated[str, typer.Option(
+      ...,"-o", "--output", help="Output PDF file (path + filename).",
+      prompt="Output file name"
+  )],
+  level: Annotated[int, typer.Option(
+    ...,"--level","-l", help="Level of compression. Range is between 0 to 9, where 0 is no compression, and 9 is highest compression."
+  )]):
+  
+  compress.execute(input, output, level)
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(

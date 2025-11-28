@@ -1,6 +1,5 @@
 from pathlib import Path
 from pypdf import PdfWriter
-import rich
 from pdfcli.utils.cli_utils import rprint
 from pdfcli.utils.page_utils import check_output, read_pdf
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -10,13 +9,16 @@ from pdfcli.utils.validators import exit_with_error_message
 description = """
 Compress a PDF file into a smaller size.\n
 Example:\n
-pdfcli compress input.pdf -o output.pdf
+pdfcli compress input.pdf -o output.pdf -l 5
 """
 
 def execute(file_input: str, output: str, level: int = 5) -> None:
 
   output = check_output(output)
   reader = read_pdf(file_input)
+
+  if level not in range(0, 10):
+    exit_with_error_message(f"Level is outside of range. Accepted range is 0 - 9.")
 
   with Progress(
     SpinnerColumn(),
