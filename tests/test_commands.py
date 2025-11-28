@@ -1,3 +1,4 @@
+import operator
 from pathlib import Path
 from pypdf import PdfReader
 from typer.testing import CliRunner
@@ -16,6 +17,7 @@ IMAGE_SAMPLE_1 = str(BASE / "data" / "input" / "photo1.jpg")
 IMAGE_SAMPLE_2 = str(BASE / "data" / "input" / "photo2.jpg")
 IMAGE_SAMPLE_3 = str(BASE / "data" / "input" / "photo3.jpg")
 PDF_SAMPLE_PROTECTED = str(BASE / "data" / "input" / "protected.pdf")
+PDF_SAMPLE_40MB = str(BASE / "data" / "input" / "40mb.pdf")
 
 EXPECTED_MERGE = str(BASE / "data" / "expected" / "merge.pdf")
 EXPECTED_IMG2PDF = str(BASE / "data" / "expected" / "img2pdf.pdf")
@@ -93,6 +95,27 @@ def assert_folder_content(folder_path: str, expected_folder_path:str, *, file_ex
   #NOTE: put more folder assertions? not sure what else to check
 
   return True
+
+def compare_file_size(folder_path: str, expected_path: str, *, comparison: str = "<") -> bool:
+
+  OPS = {
+    "<": operator.lt,
+    "<=": operator.le,
+    ">": operator.gt,
+    ">=": operator.ge,
+    "==": operator.eq,
+    "!=": operator.ne,
+  }
+
+  op = OPS[comparison]
+
+  if op is None:
+    raise ValueError(f"Invalid comparison operator: {comparison}")
+
+  file_size = Path(folder_path).stat().st_size
+  expected_size = Path(expected_path).stat().st_size
+
+  return op(file_size, expected_size)
 
 
 # test if the app can just run
@@ -395,3 +418,38 @@ class TesteDecryptCommand:
     assert result.exit_code == 0
     assert output.exists()
     assert not copy_to.exists() # check if file is removed or not
+
+class TesteCompressCommand:
+
+  output_name = "compress.pdf"
+
+  
+
+  def test_compress_help(self):
+    result = runner.invoke(app, ['compress', '--help'])
+    assert result.exit_code == 0
+
+  def test_compress(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+      "compress",
+      PDF_SAMPLE_40MB,
+      "--output",
+      output_str,
+      "--level",
+      6,
+      "--quality",
+      "medium"
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert compare_file_size(PDF_SAMPLE_40MB, output_str, comparison=">")
+    
