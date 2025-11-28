@@ -10,6 +10,7 @@ Simple PDF-CLI is a simple CLI app to edit PDFs directly from the terminal. Curr
 - Split a PDF into multiple PDFs
 - Encrypt a PDF
 - Decrypt a PDF
+- Compress a PDF
 
 Testing photos by [Pavel Moiseev](https://unsplash.com/@pavelmois?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on Unsplash.
 
@@ -63,6 +64,12 @@ pdfcli encrypt file.pdf -o output.pdf -p password1
 pdfcli decrypt file.pdf -o output.pdf -p password1
 ```
 
+**Compress**
+
+```bash
+pdfcli compress input.pdf -o output.pdf -l 6 -q medium
+```
+
 ## Installation
 
 **Using pip (recommended):**
@@ -71,7 +78,7 @@ pdfcli decrypt file.pdf -o output.pdf -p password1
 pip install simple-pdf-cli
 ```
 
-**Manual Installation**
+**Manual Installation:**
 
 1. Clone the repo
 
@@ -94,11 +101,11 @@ pip install -e .
 ## To-Do List
 
 - [x] Implement proper type and error checking
-- [ ] Compress PDF
+- [x] Compress PDF
 - [x] Split PDF
 - [x] Password protect
 - [ ] Allow a `.txt` file as input for arguments that accept multiple files
 - [ ] Edit PDF metadata
 - [x] Upload to PyPI
+- [ ] Separate CLI and core functions
 - [ ] Create a GUI version
-- Etc.
