@@ -4,10 +4,12 @@ from typing_extensions import Annotated
 
 from pdfcli import __version__
 from pdfcli.commands import compress, merge, convert, reorder, trim, split, decrypt, encrypt
+from pdfcli.utils.cli_utils import read_pdf_list, get_all_pdfs_in_folder
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
   Easily merge PDFs, convert between PDF and images, rearrage PDF pages, and trim a PDF.\n
+  Supports batch processing with a .txt file containing PDF paths, or a folder containing PDFs. The latter will sort PDFs alphabetically.\n
   Run 'pdfcli [command] --help' for specific command help.
   """
   )
@@ -20,8 +22,17 @@ def merge_command(inputs: Annotated[List[str], typer.Argument(help="Input PDF fi
   output: Annotated[str, typer.Option(
       ...,"-o", "--output", help="Output PDF file (path + filename).",
       prompt="Output file name"
-  )]):
+  )],
+  batch: Annotated[bool, typer.Option(
+    ..., "--batch", "-b", help="Merge all PDFs in the input folder.",
+  )] = False):
+
+  if batch or len(inputs) == 1 and inputs[0].lower().endswith(".txt"):
+    inputs = read_pdf_list(inputs[0])
   
+  if inputs[0] == "." or inputs[0] == "./":
+    inputs = get_all_pdfs_in_folder(".")
+
   merge.execute(inputs, output)
 
 # Images to PDF
@@ -150,8 +161,8 @@ def compress_command(input: Annotated[str, typer.Argument(help="Input PDF files.
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(
-  "--version", "-v", help="Show version and exit", callback=False, is_eager=True
-  )] = False):
+  "--version", "-v", help="Show version and exit", callback=False, is_eager=True # type: ignore
+  )] = False): # type: ignore
 
   if version:
     print(f"pdfcli version {__version__}")
