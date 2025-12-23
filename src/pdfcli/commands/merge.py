@@ -2,6 +2,9 @@ from typing import List
 from pypdf import PdfWriter
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
+import logging
+
+
 
 from pdfcli.utils.page_utils import check_output, read_pdf
 
@@ -13,6 +16,7 @@ description = """
 
 def execute(inputs: List[str], output: str) -> None:
 
+  logging.getLogger("pypdf").setLevel(logging.ERROR)
   writer = PdfWriter()
   output = check_output(output)
   

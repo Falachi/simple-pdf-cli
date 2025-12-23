@@ -1,5 +1,6 @@
 from rich.console import Console
 from pathlib import Path
+from natsort import natsorted
 
 console = Console()
 
@@ -44,7 +45,7 @@ def get_all_pdfs_in_folder(folder_path: str) -> list[str]:
   if not pdfs:
     rprint(f"No PDF files found in {folder_path}.", status=1)
 
-  pdfs.sort()
+  pdfs = natsorted(pdfs)
   
   rprint(f"Found {len(pdfs)} PDF files in {folder_path}.", status=None)
 
