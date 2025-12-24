@@ -33,7 +33,11 @@ keywords = [
   "pdf-tools",
   "merge-pdf",
   "pdf-trim",
-  "pdf-to-image"
+  "pdf-to-image",
+  "compress-pdf",
+  "pdf-split",
+  "pdf-encrypt",
+  "pdf-decrypt",
 ]
 readme = "README.md"
 license = "MIT"
