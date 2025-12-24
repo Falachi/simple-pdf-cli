@@ -4,7 +4,6 @@ from typing_extensions import Annotated
 
 from pdfcli import __version__
 from pdfcli.commands import compress, merge, convert, reorder, trim, split, decrypt, encrypt
-from pdfcli.utils.cli_utils import read_pdf_list, get_all_pdfs_in_folder
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
@@ -22,18 +21,9 @@ def merge_command(inputs: Annotated[List[str], typer.Argument(help="Input PDF fi
   output: Annotated[str, typer.Option(
       ...,"-o", "--output", help="Output PDF file (path + filename).",
       prompt="Output file name"
-  )],
-  batch: Annotated[bool, typer.Option(
-    ..., "--batch", "-b", help="Merge all PDFs in the input folder.",
-  )] = False):
+  )]):
 
-  if batch or len(inputs) == 1 and inputs[0].lower().endswith(".txt"):
-    inputs = read_pdf_list(inputs[0])
-  
-  if inputs[0] == "." or inputs[0] == "./":
-    inputs = get_all_pdfs_in_folder(".")
-
-  merge.execute(inputs, output)
+  merge.cli_execute(inputs, output)
 
 # Images to PDF
 @app.command(help=convert.img2pdf_desc, name="img2pdf")
