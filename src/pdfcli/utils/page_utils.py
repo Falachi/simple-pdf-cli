@@ -86,20 +86,22 @@ def create_path(path_name: str,*, default: str = "") -> str:
   return path_name # In case .strip() helps
 
 # Checks if PDF is real, and get password if it's password protected
-def read_pdf(filename:str, *, password: str | None = None) -> PdfReader:
+def read_pdf(filename:str, *, password: str = "") -> PdfReader:
   path = ensure_extension(filename)
   base = Path(filename).name
 
   if not Path(path).exists():
     exit_with_error_message(f"File not found: {path}")
 
+  reader: PdfReader
   try:
     reader = PdfReader(path)
   except Exception as e:
     exit_with_error_message(str(e))
+    raise RuntimeError("Unreachable")
   
   tries = 3
-  indicator = -1 # default value for no password
+  indicator = -1
 
   while reader.is_encrypted and tries > 0:
 
@@ -122,15 +124,15 @@ def read_pdf(filename:str, *, password: str | None = None) -> PdfReader:
 def get_pdf_password(filename: str) -> str | None:
   
   base = Path(filename).name
-  try:
-    reader = PdfReader(filename)
-  except Exception as e:
-    exit_with_error_message(str(e))
+  reader = PdfReader(filename)
   
   if not reader.is_encrypted:
     return None
 
   tries = 3
+  indicator = -1
+  password = None
+  
   while reader.is_encrypted and tries > 0:
     password = typer.prompt(f"{base} is encrypted. Enter password")
     indicator = reader.decrypt(password)

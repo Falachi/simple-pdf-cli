@@ -8,6 +8,7 @@ from pdfcli.commands import compress, merge, convert, reorder, trim, split, decr
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
   Easily merge PDFs, convert between PDF and images, rearrage PDF pages, and trim a PDF.\n
+  Supports batch processing with a .txt file containing PDF paths, or a folder containing PDFs. The latter will sort PDFs alphabetically.\n
   Run 'pdfcli [command] --help' for specific command help.
   """
   )
@@ -21,8 +22,8 @@ def merge_command(inputs: Annotated[List[str], typer.Argument(help="Input PDF fi
       ...,"-o", "--output", help="Output PDF file (path + filename).",
       prompt="Output file name"
   )]):
-  
-  merge.execute(inputs, output)
+
+  merge.cli_execute(inputs, output)
 
 # Images to PDF
 @app.command(help=convert.img2pdf_desc, name="img2pdf")
@@ -150,8 +151,8 @@ def compress_command(input: Annotated[str, typer.Argument(help="Input PDF files.
 
 @app.callback(invoke_without_command=True)
 def main(version: Annotated[bool, typer.Option(
-  "--version", "-v", help="Show version and exit", callback=False, is_eager=True
-  )] = False):
+  "--version", "-v", help="Show version and exit", callback=False, is_eager=True # type: ignore
+  )] = False): # type: ignore
 
   if version:
     print(f"pdfcli version {__version__}")

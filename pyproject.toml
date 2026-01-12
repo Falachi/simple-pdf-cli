@@ -12,7 +12,7 @@ exclude= [
 
 [project]
 name = "simple-pdf-cli"
-version = "0.2.0"
+version = "0.2.1.dev2"
 requires-python = ">=3.8"
 dependencies = [
   "pypdf>=6.3.0",
@@ -20,7 +20,8 @@ dependencies = [
   "pillow>=12.0.0",
   "typer>=0.20.0",
   "rich>=14.2.0",
-  "cryptography>=46.0.0"
+  "cryptography>=46.0.0",
+  "natsort==8.4.0"
 ]
 description = "A simple CLI app for basic PDF modifications."
 authors = [
@@ -32,7 +33,11 @@ keywords = [
   "pdf-tools",
   "merge-pdf",
   "pdf-trim",
-  "pdf-to-image"
+  "pdf-to-image",
+  "compress-pdf",
+  "pdf-split",
+  "pdf-encrypt",
+  "pdf-decrypt",
 ]
 readme = "README.md"
 license = "MIT"

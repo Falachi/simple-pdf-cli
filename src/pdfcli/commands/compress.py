@@ -87,7 +87,7 @@ def execute(file_input: str, output: str, level: int = 6, quality: str = "medium
   
   completion_message(file_input, output)
 
-def completion_message(input_path: str, output_path: str) -> str:
+def completion_message(input_path: str, output_path: str) -> None:
 
   input_size = Path(input_path).stat().st_size
   output_size = Path(output_path).stat().st_size
