@@ -7,6 +7,7 @@ from pathlib import Path
 
 from pdfcli.utils.cli_utils import get_all_pdfs_in_folder, read_pdf_list
 from pdfcli.utils.page_utils import check_output, read_pdf
+from pdfcli.utils.validators import exit_with_error_message
 
 description = """
   Merge multiple PDF files into one.\n
@@ -14,15 +15,32 @@ description = """
     pdfcli merge file1.pdf file2.pdf -o merged.pdf
   """
 
+def normalize_inputs(inputs: List[str]) -> List[str]:
+  pdfs = []
+
+  for item in inputs:
+    path = Path(item)
+
+    if not path.exists():
+      exit_with_error_message(f"File not found: {item}")
+    
+    if path.is_dir():
+      pdfs.extend(get_all_pdfs_in_folder(str(path)))
+    
+    if path.is_file():
+      if item.lower().endswith(".txt"):
+        pdfs.extend(read_pdf_list(str(path)))
+      elif item.lower().endswith(".pdf"):
+        pdfs.append(str(path))
+      else:
+        exit_with_error_message(f"Unsupported file type: {item}")
+  
+  return pdfs
+
 def cli_execute(inputs: List[str], output: str) -> None:
 
   output = check_output(output)
-
-  if len(inputs) == 1 and inputs[0].lower().endswith(".txt"):
-    inputs = read_pdf_list(inputs[0])
-
-  if inputs[0] == "." or inputs[0] == "./":
-    inputs = get_all_pdfs_in_folder(".")
+  inputs = normalize_inputs(inputs)
   
   with Progress(
     SpinnerColumn(),
