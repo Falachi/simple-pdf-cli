@@ -44,6 +44,9 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Use PyPI testing README
         run: cp README.testpypi.md README.md
       - name: Download all the dists
