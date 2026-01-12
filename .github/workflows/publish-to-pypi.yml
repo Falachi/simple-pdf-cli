@@ -68,6 +68,8 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Use PyPI testing README
+        run: cp README.testpypi.md README.md
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:

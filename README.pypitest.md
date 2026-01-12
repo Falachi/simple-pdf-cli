@@ -3,6 +3,9 @@
 > This package is published to **TestPyPI** for CI and release testing.
 > Versions may change or be deleted without notice.
 
+## Changelog (Test Builds)
+- Merge function accepts `.txt` or folder directory as input. Mix inputs are supported
+
 # Simple PDF-CLI
 
 Simple PDF-CLI is a simple CLI app to edit PDFs directly from the terminal. Current features:
