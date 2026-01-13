@@ -8,17 +8,17 @@ import typer
 
 INVALID_CHARS = r'\\|/|:|\*|\?|"|<|>|\|'
 
-def ensure_extension(filename: str, *, extension: str = ".pdf") -> str:
+def input_validator(filename: str) -> str:
 
   filename = filename.strip()
 
-  base = Path(filename).name
+  base = Path(filename)
 
-  if not is_valid_filename(base, no_ext=False):
+  if not is_valid_filename(base.name, no_ext=False):
     exit_with_error_message("File name invalid.")
   
-  if not base.lower().endswith(extension):
-    filename = str(Path(filename).with_name(base + extension))
+  if not base.exists():
+    exit_with_error_message(f"File not found: {filename}")
   
   return filename
 

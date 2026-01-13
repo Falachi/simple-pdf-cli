@@ -6,7 +6,7 @@ import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from pdfcli.utils.page_utils import check_output, create_path, get_pdf_password
-from pdfcli.utils.validators import ensure_extension
+from pdfcli.utils.validators import input_validator
 
 img2pdf_desc = """
   Convert images to a single PDF.\n
@@ -50,7 +50,7 @@ pdf2img_desc = """
 
 def pdf2img_execution(input: str, output_folder: str) -> None:
 
-  input = ensure_extension(input)
+  input = input_validator(input)
   password = get_pdf_password(input) # in case the file is protected
   
   output_folder = create_path(output_folder, default="out_images")
