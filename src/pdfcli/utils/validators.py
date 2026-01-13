@@ -3,6 +3,7 @@ import re
 from typing import List
 import rich
 from pathlib import Path
+from PIL import Image, UnidentifiedImageError
 
 import typer
 
@@ -104,3 +105,12 @@ def output_validator(path: str) -> bool:
     return typer.confirm("File already exist. Overwrite?")
 
   return True
+
+def is_valid_image(path: str) -> bool:
+  try:
+    with Image.open(path) as img:
+      img.verify()
+    return True
+  
+  except (FileNotFoundError, UnidentifiedImageError):
+    return False

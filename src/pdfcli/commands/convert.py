@@ -1,12 +1,14 @@
 # Images to PDF
 from PIL import Image
 from typing import List
+from pathlib import Path
 from pdf2image import convert_from_path
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from pdfcli.utils.cli_utils import extract_lines_from_file, get_all_images_in_folder
 from pdfcli.utils.page_utils import check_output, create_path, get_pdf_password, is_poppler_available
-from pdfcli.utils.validators import input_validator
+from pdfcli.utils.validators import exit_with_error_message, is_valid_image, input_validator
 
 img2pdf_desc = """
   Convert images to a single PDF.\n
@@ -15,10 +17,33 @@ img2pdf_desc = """
   pdfcli image1.png image2.png image3.png -o output.pdf
   """
 
+def normalize_inputs(images: List[str]) -> List[str]: 
+  valid_images = []
+  
+  for item in images:
+    path = Path(item)
+
+    if not path.exists():
+      exit_with_error_message(f"Path not found: {item}")
+    
+    if path.is_dir():
+      valid_images.extend(get_all_images_in_folder(str(path)))
+    
+    if path.is_file():
+      if item.lower().endswith(".txt"):
+        valid_images.extend(extract_lines_from_file(str(path), validator=is_valid_image))
+      elif is_valid_image(item):
+        valid_images.append(str(path))
+      else:
+        exit_with_error_message(f"Unsupported file type: {item}")
+  
+  return valid_images
+
 def img2pdf_execution(images: List[str], output: str) -> None:
     
   pil_images = []
   output = check_output(output)
+  images = normalize_inputs(images)
 
   with Progress(
     SpinnerColumn(),
