@@ -21,18 +21,18 @@ Testing photos by [Pavel Moiseev](https://unsplash.com/@pavelmois?utm_source=uns
 ### Note:
 The PDF to Images feature requires **poppler** to function.
 
-Windows
+**Windows**
 
 I recommend using [Scoop](https://scoop.sh/#/) for easy installation. `scoop install poppler`
 
 Otherwise you can download manually from [here](https://github.com/oschwartz10612/poppler-windows) and add the `bin` directory to PATH.
 
-MacOS
+**MacOS**
 
 You can use Homebrew to install.
 `brew install poppler`
 
-Linux
+**Linux**
 
 Install `poppler-utils` with a package manager of your choice.
 
