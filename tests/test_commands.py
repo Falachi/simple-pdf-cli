@@ -43,11 +43,11 @@ def assert_pdf(pdf_path: str, expected_pdf_path: str,
   expected_file_password = (
     expected_file_password
     if expected_file_password is not None
-    else password
+    else ""
   )
 
   if file_reader.is_encrypted:
-    indicator = file_reader.decrypt(password)
+    indicator = file_reader.decrypt(expected_file_password)
     print(f"Indicator!!! {indicator}")
     if indicator == 0:
       raise Exception("Wrong password.")
@@ -329,7 +329,7 @@ class TesteEncryptCommand:
     
     assert result.exit_code == 0
     assert output.exists()
-    assert assert_pdf(output_str, EXPECTED_ENCRYPT, password=ENCRYPTION_PASSWORD)
+    assert assert_pdf(output_str, EXPECTED_ENCRYPT, expected_file_password=ENCRYPTION_PASSWORD)
 
   def test_remove_after(self, tmp_path: Path):
     output_name = "encrypt-rm_test.pdf"
@@ -439,7 +439,7 @@ class TesteCompressCommand:
       "--output",
       output_str,
       "--level",
-      6,
+      "6",
       "--quality",
       "medium"
     ])

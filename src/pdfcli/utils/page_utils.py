@@ -121,17 +121,17 @@ def read_pdf(filename:str, *, password: str = "") -> PdfReader:
     
   return reader
 
-def get_pdf_password(filename: str) -> str | None:
+def get_pdf_password(filename: str) -> str:
   
   base = Path(filename).name
   reader = PdfReader(filename)
   
   if not reader.is_encrypted:
-    return None
+    return ""
 
   tries = 3
   indicator = -1
-  password = None
+  password = ""
   
   while reader.is_encrypted and tries > 0:
     password = typer.prompt(f"{base} is encrypted. Enter password")
