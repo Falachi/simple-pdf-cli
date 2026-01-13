@@ -1,10 +1,11 @@
+from typing import List, Optional
 from rich.console import Console
 from pathlib import Path
 from natsort import natsorted
 
 console = Console()
 
-def rprint(message: str,*, status: int | None = None) -> None:
+def rprint(message: str,*, status: Optional[int] = None) -> None:
 
   styles = {
     0: "green",
@@ -19,7 +20,7 @@ def rprint(message: str,*, status: int | None = None) -> None:
 
 
 # Read all PDF files from a text file
-def read_pdf_list(file_path: str) -> list[str]:
+def read_pdf_list(file_path: str) -> List[str]:
 
   pdfs = []
   try:
@@ -34,7 +35,7 @@ def read_pdf_list(file_path: str) -> list[str]:
   
   return pdfs
 
-def get_all_pdfs_in_folder(folder_path: str) -> list[str]:
+def get_all_pdfs_in_folder(folder_path: str) -> List[str]:
 
   path = Path(folder_path)
   if not path.is_dir():
