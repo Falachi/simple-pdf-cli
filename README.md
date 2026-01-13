@@ -126,7 +126,7 @@ pip install -e .
 - [x] Compress PDF
 - [x] Split PDF
 - [x] Password protect
-- [ ] Allow a `.txt` file as input for arguments that accept multiple files
+- [x] Allow a `.txt` file as input for arguments that accept multiple files
 - [ ] Edit PDF metadata
 - [x] Upload to PyPI
 - [ ] Separate CLI and core functions
