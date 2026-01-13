@@ -5,8 +5,9 @@ from typing import List
 from pypdf import PdfReader
 import rich
 import typer
+import shutil
 
-from pdfcli.utils.validators import ensure_extension, exit_with_error_message, output_validator, path_validator
+from pdfcli.utils.validators import input_validator, exit_with_error_message, output_validator, path_validator
 
 # Returned a list without duplicates while in the same order based on the input.
 def dedupe_ordered(numbers :List[int]) -> List[int]:
@@ -87,7 +88,7 @@ def create_path(path_name: str,*, default: str = "") -> str:
 
 # Checks if PDF is real, and get password if it's password protected
 def read_pdf(filename:str, *, password: str = "") -> PdfReader:
-  path = ensure_extension(filename)
+  path = input_validator(filename)
   base = Path(filename).name
 
   if not Path(path).exists():
@@ -121,17 +122,17 @@ def read_pdf(filename:str, *, password: str = "") -> PdfReader:
     
   return reader
 
-def get_pdf_password(filename: str) -> str | None:
+def get_pdf_password(filename: str) -> str:
   
   base = Path(filename).name
   reader = PdfReader(filename)
   
   if not reader.is_encrypted:
-    return None
+    return ""
 
   tries = 3
   indicator = -1
-  password = None
+  password = ""
   
   while reader.is_encrypted and tries > 0:
     password = typer.prompt(f"{base} is encrypted. Enter password")
@@ -148,9 +149,12 @@ def get_pdf_password(filename: str) -> str | None:
   return password
 
 def check_output(path: str) -> str:
-  path = ensure_extension(path) # add .pdf in case user doesn't think of adding it
+  #path = input_validator(path) # add .pdf in case user doesn't think of adding it
   
   if not output_validator(path):
     exit_with_error_message()
 
   return path
+
+def is_poppler_available() -> bool:
+  return shutil.which("pdfinfo") is not None

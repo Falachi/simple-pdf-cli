@@ -1,6 +1,10 @@
+[![PyPI - Version](https://img.shields.io/pypi/v/simple-pdf-cli)](https://pypi.org/project/simple-pdf-cli/) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/simple-pdf-cli) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Falachi/simple-pdf-cli/publish-to-pypi.yml) ![PyPI - License](https://img.shields.io/pypi/l/simple-pdf-cli)
+
 # Simple PDF-CLI
 
-Simple PDF-CLI is a simple CLI app to edit PDFs directly from the terminal. Current features:
+Simple PDF-CLI is a simple Python CLI app to edit PDFs directly from the terminal. Install with pip: `pip install simple-pdf-cli`
+
+Current features:
 
 - Merge multiple PDFs
 - Convert PDF to images
@@ -13,6 +17,24 @@ Simple PDF-CLI is a simple CLI app to edit PDFs directly from the terminal. Curr
 - Compress a PDF
 
 Testing photos by [Pavel Moiseev](https://unsplash.com/@pavelmois?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on Unsplash.
+
+### Note:
+The PDF to Images feature requires **poppler** to function.
+
+**Windows**
+
+I recommend using [Scoop](https://scoop.sh/#/) for easy installation. `scoop install poppler`
+
+Otherwise you can download manually from [here](https://github.com/oschwartz10612/poppler-windows) and add the `bin` directory to PATH.
+
+**MacOS**
+
+You can use Homebrew to install.
+`brew install poppler`
+
+**Linux**
+
+Install `poppler-utils` with a package manager of your choice.
 
 ## Usage Examples
 
@@ -104,7 +126,7 @@ pip install -e .
 - [x] Compress PDF
 - [x] Split PDF
 - [x] Password protect
-- [ ] Allow a `.txt` file as input for arguments that accept multiple files
+- [x] Allow a `.txt` file as input for arguments that accept multiple files
 - [ ] Edit PDF metadata
 - [x] Upload to PyPI
 - [ ] Separate CLI and core functions

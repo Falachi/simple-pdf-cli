@@ -5,12 +5,14 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 import logging
 from pathlib import Path
 
-from pdfcli.utils.cli_utils import get_all_pdfs_in_folder, read_pdf_list
+from pdfcli.utils.cli_utils import get_all_pdfs_in_folder, extract_lines_from_file
 from pdfcli.utils.page_utils import check_output, read_pdf
 from pdfcli.utils.validators import exit_with_error_message
 
 description = """
   Merge multiple PDF files into one.\n
+  Supports merging from individual files, a .txt file containing PDF paths, or a folder containing PDFs.\n
+  Supports mixing these input types.\n
   Example:\n
     pdfcli merge file1.pdf file2.pdf -o merged.pdf
   """
@@ -22,14 +24,14 @@ def normalize_inputs(inputs: List[str]) -> List[str]:
     path = Path(item)
 
     if not path.exists():
-      exit_with_error_message(f"File not found: {item}")
+      exit_with_error_message(f"Path not found: {item}")
     
     if path.is_dir():
       pdfs.extend(get_all_pdfs_in_folder(str(path)))
     
     if path.is_file():
       if item.lower().endswith(".txt"):
-        pdfs.extend(read_pdf_list(str(path)))
+        pdfs.extend(extract_lines_from_file(str(path)))
       elif item.lower().endswith(".pdf"):
         pdfs.append(str(path))
       else:

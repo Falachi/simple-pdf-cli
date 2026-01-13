@@ -18,6 +18,8 @@ IMAGE_SAMPLE_2 = str(BASE / "data" / "input" / "photo2.jpg")
 IMAGE_SAMPLE_3 = str(BASE / "data" / "input" / "photo3.jpg")
 PDF_SAMPLE_PROTECTED = str(BASE / "data" / "input" / "protected.pdf")
 PDF_SAMPLE_40MB = str(BASE / "data" / "input" / "40mb.pdf")
+MERGE_FOLDER = str(BASE / "data" / "input" / "merge_folder")
+IMAGE_FOLDER = str(BASE / "data" / "input" / "image_folder")
 
 EXPECTED_MERGE = str(BASE / "data" / "expected" / "merge.pdf")
 EXPECTED_IMG2PDF = str(BASE / "data" / "expected" / "img2pdf.pdf")
@@ -29,6 +31,8 @@ EXPECTED_ENCRYPT = str(BASE / "data" / "expected" / "encrypt.pdf")
 EXPECTED_DECRYPT = str(BASE / "data" / "expected" / "decrypt.pdf")
 
 ENCRYPTION_PASSWORD = "12345"
+
+get_pdf_pages = lambda pdf_path, password=None: len(PdfReader(pdf_path, password=password).pages)
 
 def assert_pdf(pdf_path: str, expected_pdf_path: str, 
               *, validate_page_count: bool = True, 
@@ -43,18 +47,16 @@ def assert_pdf(pdf_path: str, expected_pdf_path: str,
   expected_file_password = (
     expected_file_password
     if expected_file_password is not None
-    else password
+    else ""
   )
 
   if file_reader.is_encrypted:
-    indicator = file_reader.decrypt(password)
-    print(f"Indicator!!! {indicator}")
+    indicator = file_reader.decrypt(expected_file_password)
     if indicator == 0:
       raise Exception("Wrong password.")
   
   if expected_reader.is_encrypted:
     indicator = expected_reader.decrypt(expected_file_password)
-    print(f"Indicator!!! {indicator}")
     if indicator == 0:
       raise Exception("Wrong password.")
 
@@ -131,7 +133,7 @@ class TestMergeCommand:
     result = runner.invoke(app, ['merge', '--help'])
     assert result.exit_code == 0
 
-  def test_merge(self, tmp_path: Path):
+  def test_merge_with_pdfs(self, tmp_path: Path):
     output = tmp_path / self.output_name
     output_str = str(output)
 
@@ -151,6 +153,78 @@ class TestMergeCommand:
     assert result.exit_code == 0
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_MERGE)
+  
+  def test_merge_with_text_file(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    tmp_text_file = tmp_path / "merge_list.txt"
+    with open(tmp_text_file, "w") as f:
+      f.write(f"{PDF_SAMPLE_1_PAGE_1}\n")
+      f.write(f"{PDF_SAMPLE_1_PAGE_2}\n")
+
+    result = runner.invoke(app, [
+       'merge', 
+       str(tmp_text_file),
+       '--output', 
+       output_str
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_MERGE)
+
+  def test_merge_with_folder(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+       'merge', 
+       MERGE_FOLDER,
+       '--output', 
+       output_str
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_MERGE)
+  
+  def test_merge_with_mixed_inputs(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    tmp_text_file = tmp_path / "merge_list.txt"
+    with open(tmp_text_file, "w") as f:
+      f.write(f"{PDF_SAMPLE_1_PAGE_1}\n")
+      f.write(f"{PDF_SAMPLE_1_PAGE_2}\n")
+
+    result = runner.invoke(app, [
+       'merge', 
+       PDF_SAMPLE_1_PAGE_1,
+       str(tmp_text_file),
+       MERGE_FOLDER,
+       '--output', 
+       output_str
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+
+    assert result.exit_code == 0
+    assert output.exists()
+    assert get_pdf_pages(output_str) == 5  # 1 + 2 + 2 pages = 5 pages total
 
 class TestImg2PdfCommand:
 
@@ -181,6 +255,79 @@ class TestImg2PdfCommand:
     assert result.exit_code == 0
     assert output.exists()
     assert assert_pdf(output_str, EXPECTED_IMG2PDF)
+  
+  def test_img2pdf_with_folder(self, tmp_path: Path):
+    output = tmp_path / self.output_name
+    output_str = str(output)
+
+    result = runner.invoke(app, [
+       "img2pdf",
+       IMAGE_FOLDER,
+       "--output",
+       output_str
+    ])
+
+    print(result.output)
+    if result.exception:
+      print(result.exception)
+      print(type(result.exception))
+    
+    assert result.exit_code == 0
+    assert output.exists()
+    assert assert_pdf(output_str, EXPECTED_IMG2PDF)
+
+    def test_img2pdf_with_text_file(self, tmp_path: Path):
+      output = tmp_path / self.output_name
+      output_str = str(output)
+
+      tmp_text_file = tmp_path / "image_list.txt"
+      with open(tmp_text_file, "w") as f:
+        f.write(f"{IMAGE_SAMPLE_1}\n")
+        f.write(f"{IMAGE_SAMPLE_2}\n")
+        f.write(f"{IMAGE_SAMPLE_3}\n")
+
+      result = runner.invoke(app, [
+         "img2pdf",
+         str(tmp_text_file),
+         "--output",
+         output_str
+      ])
+
+      print(result.output)
+      if result.exception:
+        print(result.exception)
+        print(type(result.exception))
+      
+      assert result.exit_code == 0
+      assert output.exists()
+      assert assert_pdf(output_str, EXPECTED_IMG2PDF)
+
+      def test_img2pdf_with_mixed_inputs(self, tmp_path: Path):
+        output = tmp_path / self.output_name
+        output_str = str(output)
+
+        tmp_text_file = tmp_path / "image_list.txt"
+        with open(tmp_text_file, "w") as f:
+          f.write(f"{IMAGE_SAMPLE_1}\n")
+          f.write(f"{IMAGE_SAMPLE_2}\n")
+
+        result = runner.invoke(app, [
+           "img2pdf",
+           IMAGE_SAMPLE_3,
+           str(tmp_text_file),
+           IMAGE_FOLDER,
+           "--output",
+           output_str
+        ])
+
+        print(result.output)
+        if result.exception:
+          print(result.exception)
+          print(type(result.exception))
+        
+        assert result.exit_code == 0
+        assert output.exists()
+        assert get_pdf_pages(output_str) == 6  # 1 + 2 + 3 images = 6 pages total
 
 class TestPdf2ImgCommand:
 
@@ -329,7 +476,7 @@ class TesteEncryptCommand:
     
     assert result.exit_code == 0
     assert output.exists()
-    assert assert_pdf(output_str, EXPECTED_ENCRYPT, password=ENCRYPTION_PASSWORD)
+    assert assert_pdf(output_str, EXPECTED_ENCRYPT, expected_file_password=ENCRYPTION_PASSWORD)
 
   def test_remove_after(self, tmp_path: Path):
     output_name = "encrypt-rm_test.pdf"
@@ -439,7 +586,7 @@ class TesteCompressCommand:
       "--output",
       output_str,
       "--level",
-      6,
+      "6",
       "--quality",
       "medium"
     ])

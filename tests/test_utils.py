@@ -1,6 +1,8 @@
+from pathlib import Path
 import pytest
+import typer
 from pdfcli.utils.page_utils import parse_page_ranges, dedupe_ordered, add_remaining_pages
-from pdfcli.utils.validators import ensure_extension, page_validator, path_validator
+from pdfcli.utils.validators import input_validator, page_validator, path_validator
 
 # parse_page_ranges tests
 def test_simple_range():
@@ -19,6 +21,16 @@ def test_invalid_range():
   with pytest.raises(ValueError):
       parse_page_ranges("3-")  # should fail
 
+def test_input_validator_file_exists():
+  BASE = Path(__file__).parent
+  sample = str(BASE / "data" / "input" / "8pages.pdf")
+  assert input_validator(sample) == sample
+
+def test_input_validator_file_not_found():
+  with pytest.raises(typer.Exit) as exc:
+      input_validator("non_existent_file.pdf")  # should exit due to file not found
+  assert exc.value.exit_code == 1
+
 # dedupe_ordered tests
 def test_dedupe_ordered():
   assert dedupe_ordered([1,1,2,3,2,4]) == [1,2,3,4]
@@ -27,13 +39,6 @@ def test_dedupe_ordered():
 def test_add_remaining_pages():
   result = add_remaining_pages([2,0], total_pages=5)
   assert result == [2,0,1,3,4]  # verifying order
-
-# ensure_extension tests
-def test_add_extension():
-  assert ensure_extension("output") == "output.pdf"
-
-def test_keep_extension():
-  assert ensure_extension("file.PDF") == "file.PDF"
 
 # page_validator tests
 def test_valid_pages_within_range():
