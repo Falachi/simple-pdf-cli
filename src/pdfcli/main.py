@@ -4,13 +4,15 @@ from typing_extensions import Annotated
 
 from pdfcli import __version__
 from pdfcli.commands import compress, merge, convert, reorder, trim, split, decrypt, encrypt
+from pdfcli.utils.page_utils import is_poppler_available
 
 app = typer.Typer(help=
   """A simple PDF CLI tool.\n
   Easily merge PDFs, convert between PDF and images, rearrage PDF pages, and trim a PDF.\n
   Supports batch processing with a .txt file containing PDF paths, or a folder containing PDFs. The latter will sort PDFs alphabetically.\n
   Run 'pdfcli [command] --help' for specific command help.
-  """
+  """,
+  rich_markup_mode="rich"
   )
 
 # Commands
@@ -36,12 +38,17 @@ def img2pdf_command(images: Annotated[List[str], typer.Argument(help="Input imag
   convert.img2pdf_execution(images, output)
 
 # PDF to images
-@app.command(help=convert.pdf2img_desc, name="pdf2img")
+@app.command(help=convert.pdf2img_desc, name="pdf2img", epilog=convert.warning_message_poppler_missing())
 def pdf2img_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes for path with spaces.")],
   output_folder: Annotated[str, typer.Option(
     ..., "-o", "--output", help="Output file location.",
     prompt="Output folder name"
     )] = "out_images"):
+  
+  # if poppler is not available and normal execution is done
+  if not is_poppler_available():
+    typer.secho("Error: Poppler not found. \nPlease install poppler to use this feature. Check repository's README for help.", fg=typer.colors.RED)
+    raise typer.Exit(code=1)
   
   convert.pdf2img_execution(input, output_folder)
 
@@ -149,7 +156,7 @@ def compress_command(input: Annotated[str, typer.Argument(help="Input PDF files.
   
   compress.execute(input, output, level, quality)
 
-@app.callback(invoke_without_command=True)
+@app.callback(invoke_without_command=True, epilog="Made by [blue]Falachi[/blue].")
 def main(version: Annotated[bool, typer.Option(
   "--version", "-v", help="Show version and exit", callback=False, is_eager=True # type: ignore
   )] = False): # type: ignore

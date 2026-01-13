@@ -5,6 +5,7 @@ from typing import List
 from pypdf import PdfReader
 import rich
 import typer
+import shutil
 
 from pdfcli.utils.validators import input_validator, exit_with_error_message, output_validator, path_validator
 
@@ -154,3 +155,6 @@ def check_output(path: str) -> str:
     exit_with_error_message()
 
   return path
+
+def is_poppler_available() -> bool:
+  return shutil.which("pdfinfo") is not None

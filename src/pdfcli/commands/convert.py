@@ -5,7 +5,7 @@ from pdf2image import convert_from_path
 import rich
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from pdfcli.utils.page_utils import check_output, create_path, get_pdf_password
+from pdfcli.utils.page_utils import check_output, create_path, get_pdf_password, is_poppler_available
 from pdfcli.utils.validators import input_validator
 
 img2pdf_desc = """
@@ -41,7 +41,12 @@ def img2pdf_execution(images: List[str], output: str) -> None:
 
 # PDF to Images
 
-pdf2img_desc = """
+def warning_message_poppler_missing() -> str:
+  if is_poppler_available():
+    return ""
+  return "[yellow][bold]WARNING:[/bold] Poppler not found. PDF to image conversion will not work.[/yellow]"
+
+pdf2img_desc = f"""
   Convert each PDF page into a PNG.\n
   The page order determines the image order.\n
   Example:\n
