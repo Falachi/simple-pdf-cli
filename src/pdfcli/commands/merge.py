@@ -11,6 +11,8 @@ from pdfcli.utils.validators import exit_with_error_message
 
 description = """
   Merge multiple PDF files into one.\n
+  Supports merging from individual files, a .txt file containing PDF paths, or a folder containing PDFs.\n
+  Supports mixing these input types.\n
   Example:\n
     pdfcli merge file1.pdf file2.pdf -o merged.pdf
   """

@@ -12,7 +12,7 @@ from pdfcli.utils.validators import exit_with_error_message, is_valid_image, inp
 
 img2pdf_desc = """
   Convert images to a single PDF.\n
-  Order of input images determines the page order.\n
+  Order of input images determines the page order. Supports mixing individual files, .txt files containing image paths, and folders containing images.\n
   Example:\n
   pdfcli image1.png image2.png image3.png -o output.pdf
   """
