@@ -3,7 +3,7 @@ import typer
 from typing_extensions import Annotated
 
 from pdfcli import __version__
-from pdfcli.commands import compress, merge, convert, reorder, trim, split, decrypt, encrypt
+from pdfcli.commands import compress, merge, convert, metadata, reorder, trim, split, decrypt, encrypt
 from pdfcli.utils.page_utils import is_poppler_available
 
 app = typer.Typer(help=
@@ -155,6 +155,15 @@ def compress_command(input: Annotated[str, typer.Argument(help="Input PDF files.
   ):
   
   compress.execute(input, output, level, quality)
+
+# Show or modify PDF metadata
+@app.command(help=metadata.description, name="metadata")
+def metadata_command(input: Annotated[str, typer.Argument(help="Input PDF file. Use quotes for path with spaces.")],
+  is_edit: Annotated[bool, typer.Option(
+    "--edit", "-e", help="Edit metadata instead of displaying it.",
+  )] = False):
+
+  metadata.execute(input, is_edit)
 
 @app.callback(invoke_without_command=True, epilog="Made by [blue]Falachi[/blue].")
 def main(version: Annotated[bool, typer.Option(

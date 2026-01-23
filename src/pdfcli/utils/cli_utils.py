@@ -2,6 +2,7 @@ from typing import Callable, List, Optional
 from rich.console import Console
 from pathlib import Path
 from natsort import natsorted
+from rich.table import Table
 
 from pdfcli.utils.validators import is_valid_image
 
@@ -84,3 +85,21 @@ def get_all_images_in_folder(folder_path: str) -> List[str]:
   rprint(f"Found {len(images)} image files in {folder_path}.")
 
   return images
+
+def create_metadata_table(data: dict, title: str | None = None) -> Table:
+  
+  table = Table("Metadata", "Value", title=title)
+
+  for key, value in data.items():
+    if value is None:
+      continue
+    table.add_row(str(key), str(value))
+
+  return table
+
+def print_table(table: Table):
+  console.print(table)
+
+def create_and_print_metadata_table(data: dict, title: str | None = None) -> None:
+  table = create_metadata_table(data, title)
+  print_table(table)
